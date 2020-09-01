@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CeltaWare.CBS.PDV.Concentrator.Repository;
+
+namespace CeltaNavs.Domain
+{
+    public class CeltaBSConvertHelpers
+    {
+        public static SaleFiscalType ToSaleFiscalType(string fiscalType)
+        {
+            if (fiscalType.ToUpperInvariant() == "SAT")
+            {
+                return SaleFiscalType.SAT;
+            }
+
+            if (fiscalType.ToUpperInvariant() == "NFCE")
+            {
+                return SaleFiscalType.NFCe;
+            }
+
+            if (fiscalType.ToUpperInvariant() == "SATEMULADOR")
+            {
+                return SaleFiscalType.SATEmulador;
+            }
+            else
+            {
+                return SaleFiscalType.SATEmulador;
+            }
+        }
+    }
+}

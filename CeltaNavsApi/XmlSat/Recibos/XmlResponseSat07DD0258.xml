@@ -1,0 +1,3 @@
+System.NullReferenceException: Referência de objeto não definida para uma instância de um objeto.
+   em CeltaWare.CBS.CCS.SATBase.SendSaleMovement(String xmlSaleMovement, String& status)
+   em CeltaWare.CBS.CCS.CeltaSATService.SendSaleMovement(String saleMovementXml, String& status)

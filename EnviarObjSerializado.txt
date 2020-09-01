@@ -1,0 +1,6 @@
+ string saleRequestSerialized = JsonConvert.SerializeObject(saleRequest, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Newtonsoft.Json.Formatting.Indented
+                });
+                string saleMovementSerialized = JsonConvert.SerializeObject(saleMovement);      

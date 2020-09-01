@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<discovery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/disco/">
+  <contractRef ref="http://localhost:9292/sat/CeltaSATService.asmx?wsdl" docRef="http://localhost:9292/sat/CeltaSATService.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
+  <soap address="http://localhost:9292/sat/CeltaSATService.asmx" xmlns:q1="http://celtaware.com.br/" binding="q1:CeltaSATServiceSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+  <soap address="http://localhost:9292/sat/CeltaSATService.asmx" xmlns:q2="http://celtaware.com.br/" binding="q2:CeltaSATServiceSoap12" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+</discovery>

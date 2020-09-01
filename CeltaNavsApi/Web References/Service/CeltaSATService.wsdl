@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://celtaware.com.br/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://celtaware.com.br/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://celtaware.com.br/">
+      <s:element name="SendSaleMovement">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="saleMovementXml" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSaleMovementResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendSaleMovementResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="status" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CancelSaleMovement">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="xmlCancelSaleMovement" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CancelSaleMovementResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CancelSaleMovementResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="status" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConsultSAT">
+        <s:complexType />
+      </s:element>
+      <s:element name="ConsultSATResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ConsultSATResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TestEndToEnd">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="saleMovementXml" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="TestEndToEndResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TestEndToEndResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConsultOperacionalStatus">
+        <s:complexType />
+      </s:element>
+      <s:element name="ConsultOperacionalStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ConsultOperacionalStatusResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="SendSaleMovementSoapIn">
+    <wsdl:part name="parameters" element="tns:SendSaleMovement" />
+  </wsdl:message>
+  <wsdl:message name="SendSaleMovementSoapOut">
+    <wsdl:part name="parameters" element="tns:SendSaleMovementResponse" />
+  </wsdl:message>
+  <wsdl:message name="CancelSaleMovementSoapIn">
+    <wsdl:part name="parameters" element="tns:CancelSaleMovement" />
+  </wsdl:message>
+  <wsdl:message name="CancelSaleMovementSoapOut">
+    <wsdl:part name="parameters" element="tns:CancelSaleMovementResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConsultSATSoapIn">
+    <wsdl:part name="parameters" element="tns:ConsultSAT" />
+  </wsdl:message>
+  <wsdl:message name="ConsultSATSoapOut">
+    <wsdl:part name="parameters" element="tns:ConsultSATResponse" />
+  </wsdl:message>
+  <wsdl:message name="TestEndToEndSoapIn">
+    <wsdl:part name="parameters" element="tns:TestEndToEnd" />
+  </wsdl:message>
+  <wsdl:message name="TestEndToEndSoapOut">
+    <wsdl:part name="parameters" element="tns:TestEndToEndResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConsultOperacionalStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:ConsultOperacionalStatus" />
+  </wsdl:message>
+  <wsdl:message name="ConsultOperacionalStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:ConsultOperacionalStatusResponse" />
+  </wsdl:message>
+  <wsdl:portType name="CeltaSATServiceSoap">
+    <wsdl:operation name="SendSaleMovement">
+      <wsdl:input message="tns:SendSaleMovementSoapIn" />
+      <wsdl:output message="tns:SendSaleMovementSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CancelSaleMovement">
+      <wsdl:input message="tns:CancelSaleMovementSoapIn" />
+      <wsdl:output message="tns:CancelSaleMovementSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConsultSAT">
+      <wsdl:input message="tns:ConsultSATSoapIn" />
+      <wsdl:output message="tns:ConsultSATSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="TestEndToEnd">
+      <wsdl:input message="tns:TestEndToEndSoapIn" />
+      <wsdl:output message="tns:TestEndToEndSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConsultOperacionalStatus">
+      <wsdl:input message="tns:ConsultOperacionalStatusSoapIn" />
+      <wsdl:output message="tns:ConsultOperacionalStatusSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CeltaSATServiceSoap" type="tns:CeltaSATServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendSaleMovement">
+      <soap:operation soapAction="http://celtaware.com.br/SendSaleMovement" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelSaleMovement">
+      <soap:operation soapAction="http://celtaware.com.br/CancelSaleMovement" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsultSAT">
+      <soap:operation soapAction="http://celtaware.com.br/ConsultSAT" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TestEndToEnd">
+      <soap:operation soapAction="http://celtaware.com.br/TestEndToEnd" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsultOperacionalStatus">
+      <soap:operation soapAction="http://celtaware.com.br/ConsultOperacionalStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="CeltaSATServiceSoap12" type="tns:CeltaSATServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendSaleMovement">
+      <soap12:operation soapAction="http://celtaware.com.br/SendSaleMovement" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelSaleMovement">
+      <soap12:operation soapAction="http://celtaware.com.br/CancelSaleMovement" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsultSAT">
+      <soap12:operation soapAction="http://celtaware.com.br/ConsultSAT" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="TestEndToEnd">
+      <soap12:operation soapAction="http://celtaware.com.br/TestEndToEnd" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsultOperacionalStatus">
+      <soap12:operation soapAction="http://celtaware.com.br/ConsultOperacionalStatus" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CeltaSATService">
+    <wsdl:port name="CeltaSATServiceSoap" binding="tns:CeltaSATServiceSoap">
+      <soap:address location="http://localhost:9292/sat/CeltaSATService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="CeltaSATServiceSoap12" binding="tns:CeltaSATServiceSoap12">
+      <soap12:address location="http://localhost:9292/sat/CeltaSATService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
