@@ -297,12 +297,8 @@ namespace CeltaNavs.Domain
                 ModelSaleRequestProduct saleReqProd = context.SaleRequestProducts.Find(_id);
 
                 saleReqProd.IsDelivered = true;
-
-                //ModelSaleRequests saleReq = context.SaleRequests.Find(138);
-                //saleReqProd.SaleRequest = saleReq;
-                ////response.saleRequestProd.IsDelivered = true;      
-                //saleReq.Peoples = 2;
-                //saleReqProd.IsDelivered = true;
+                
+                
                 context.SaveChanges();
             }
             catch(Exception err)

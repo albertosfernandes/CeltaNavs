@@ -148,6 +148,7 @@
     <Compile Include="Controllers\NavsSettingsController.cs" />
     <Compile Include="Controllers\NavsSaleRequestController.cs" />
     <Compile Include="Controllers\NavsSitefController.cs" />
+    <Compile Include="Enum.cs" />
     <Compile Include="Helpers\NavsSaleHelpers.cs" />
     <Compile Include="Helpers\CeltaBSConvertHelpers.cs" />
     <Compile Include="Helpers\Formatted.cs" />

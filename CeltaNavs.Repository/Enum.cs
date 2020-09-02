@@ -11,4 +11,11 @@ namespace CeltaNavs.Repository
         BS = 1,
         Concentrator = 2,
     }
+
+    public enum ProductionStatus
+    {
+        New = 0,
+        InProduction = 1,
+        Delivered = 2
+    }
 }
