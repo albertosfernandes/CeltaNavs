@@ -25,7 +25,9 @@ namespace CeltaNavsApi.Controllers
 
         ModelSaleRequest saleRequest = new ModelSaleRequest();
         ModelNavsSetting modelSetting = new ModelNavsSetting();
-        
+        ModelSaleRequestProduct saleRequestProducts = new ModelSaleRequestProduct();
+        ModelProduct product = new ModelProduct();
+
         SaleRequestDao saleRequestDaoNew = new SaleRequestDao();
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
         SaleRequestProductDao saleRequestProductsDao = new SaleRequestProductDao();
@@ -164,31 +166,42 @@ namespace CeltaNavsApi.Controllers
             }
         }
 
-
         [HttpGet]
         public HttpResponseMessage AddProduct(string _QUANT, string _PRODUCT, string _PERSONALIZEDSALECODE, string _POSSERIAL)
         {
             try
             {
-                string XML = "";                
+                string XML = "";
                 modelSetting = settingsDao.GetById(_POSSERIAL);
-                ModelProduct myproduct = new ModelProduct();
+                ModelSaleRequest saleRequest = saleRequestDaoNew.Get(modelSetting.EnterpriseId.ToString(), _PERSONALIZEDSALECODE, true);
+
                 if (_PRODUCT.Contains("-"))
                 {
-                    myproduct = productsDao.FindByPlu(_PRODUCT, modelSetting);
+                    product = productsDao.FindByPlu(_PRODUCT, modelSetting);
                 }
                 else
                 {
-                    myproduct = productsDao.FindByInternalCode(_PRODUCT, modelSetting);
+                    product = productsDao.FindByInternalCode(_PRODUCT, modelSetting);
                 }
 
-                ModelSaleRequest saleRequest = saleRequestDaoNew.Get(modelSetting.EnterpriseId.ToString(), _PERSONALIZEDSALECODE, true);
+                if (product == null)
+                {
+                    XML += $"<CONSOLE>Produto nao encontrado<BR>";
+                    XML += $"----------------------------------------<BR></CONSOLE>";
+                    XML += " <DELAY TIME = 01> ";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDSALECODE}>";
+                    XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                    };
+                }
 
-                ModelSaleRequestProduct saleRequestProducts = new ModelSaleRequestProduct();
                 saleRequestProducts.SaleRequestId = saleRequest.SaleRequestId;
-                saleRequestProducts.ProductPriceLookUpCode = myproduct.PriceLookupCode;
-                saleRequestProducts.ProductInternalCodeOnErp = myproduct.InternalCodeOnERP;
-                saleRequestProducts.Value = Convert.ToDecimal(myproduct.SaleRetailPraticedString);
+                saleRequestProducts.ProductPriceLookUpCode = product.PriceLookupCode;
+                saleRequestProducts.ProductInternalCodeOnErp = product.InternalCodeOnERP;
+                saleRequestProducts.Value = Convert.ToDecimal(product.SaleRetailPraticedString);
                 int quant = Convert.ToInt32(_QUANT);
                 if (quant < 1)
                 {
@@ -198,11 +211,85 @@ namespace CeltaNavsApi.Controllers
                 saleRequestProducts.TotalLiquid = (saleRequestProducts.Value * saleRequestProducts.Quantity);
                 saleRequestProducts.IsCancelled = false;
                 saleRequestProducts.IsDelivered = false;
-                
-                saleRequest.Products.Add(saleRequestProducts);                
+                saleRequestProducts.ProductionStatus = ProductionStatus.New;
+
+                saleRequest.Products.Add(saleRequestProducts);
                 saleRequest.TotalLiquid += saleRequestProducts.TotalLiquid;
 
-                // Teste OK somente SaleReque sem prods saleRequestDaoNew.UpdateTeste(saleRequest.SaleRequestId, saleRequest.TotalLiquid);
+                saleRequestDaoNew.Update(saleRequest);
+
+                XML += $"<CONSOLE>Produto adicionado com sucesso<BR>";
+                XML += $"----------------------------------------<BR></CONSOLE>";
+                XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDSALECODE}>";
+                XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+
+            }
+            catch (Exception err)
+            {
+                string message = Formatted.FormatError(err.Message);
+                string XML = $"<console>{message}</console>";
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage Save(string _QUANT, string _PRODUCT, string _PERSONALIZEDSALECODE, string _POSSERIAL)
+        {
+            try
+            {
+                string XML = "";                
+                modelSetting = settingsDao.GetById(_POSSERIAL);
+                ModelSaleRequest saleRequest = saleRequestDaoNew.Get(modelSetting.EnterpriseId.ToString(), _PERSONALIZEDSALECODE, true);
+
+                if (_PRODUCT.Contains("-"))
+                {
+                    product = productsDao.FindByPlu(_PRODUCT, modelSetting);
+                }
+                else
+                {
+                    product = productsDao.FindByInternalCode(_PRODUCT, modelSetting);
+                }
+
+                if (product == null)
+                {
+                    XML += $"<CONSOLE>Produto nao encontrado<BR>";
+                    XML += $"----------------------------------------<BR></CONSOLE>";
+                    XML += " <DELAY TIME = 01> ";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDSALECODE}>";
+                    XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                    };
+                }
+
+                saleRequestProducts.SaleRequestId = saleRequest.SaleRequestId;
+                saleRequestProducts.ProductPriceLookUpCode = product.PriceLookupCode;
+                saleRequestProducts.ProductInternalCodeOnErp = product.InternalCodeOnERP;
+                saleRequestProducts.Value = Convert.ToDecimal(product.SaleRetailPraticedString);
+                int quant = Convert.ToInt32(_QUANT);
+                if (quant < 1)
+                {
+                    quant = 1;
+                }
+                saleRequestProducts.Quantity = quant;
+                saleRequestProducts.TotalLiquid = (saleRequestProducts.Value * saleRequestProducts.Quantity);
+                saleRequestProducts.IsCancelled = false;
+                saleRequestProducts.IsDelivered = false;
+                saleRequestProducts.ProductionStatus = ProductionStatus.New;
+
+                saleRequest.Products.Add(saleRequestProducts);                
+                saleRequest.TotalLiquid += saleRequestProducts.TotalLiquid;
+                
                 saleRequestDaoNew.Update(saleRequest);
 
                 XML += $"<CONSOLE>Produto adicionado com sucesso<BR>";

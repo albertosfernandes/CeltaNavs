@@ -31,7 +31,7 @@ namespace CeltaNavsApi.Controllers
         {
             string XML = "<CONSOLE><BR><BR><BR> Obtendo serial do POS.</CONSOLE>";            
             XML += $"<GET TYPE=SERIALNO NAME=_TERMINALSERIAL>";            
-            XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscommands/systemcheck HOST=h  TIMEOUT=6>";
+            XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscommands/systemcheck TIMEOUT=6>";
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
@@ -65,7 +65,7 @@ namespace CeltaNavsApi.Controllers
 
                 XML += $"<CONSOLE><BR><BR>Empresa: {modelSetting.Enterprises.FantasyName} Pos: {modelSetting.PosSerial} </CONSOLE>";
                 XML += $"<GET TYPE=HIDDEN NAME=_SERIALNUMBER VALUE={modelSetting.PosSerial}>";
-                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscommands/start HOST=h  TIMEOUT=6>";
+                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscommands/start TIMEOUT=6>";
 
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -102,7 +102,7 @@ namespace CeltaNavsApi.Controllers
             XML += $"<WRITE_AT LINE=29 COLUMN=1>__________________________________>_____</WRITE_AT>";
             XML += "<GET TYPE=FIELD NAME=OPC LIN=14 COL=7 SIZE=3 >";
             XML += $"<GET TYPE=HIDDEN NAME=_OPCSERIALNUMBER VALUE={_SERIALNUMBER}>";
-            XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscommands/getoptioncards HOST=h  TIMEOUT=6>";
+            XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscommands/getoptioncards TIMEOUT=6>";
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(XML, Encoding.UTF8, "application/xml")

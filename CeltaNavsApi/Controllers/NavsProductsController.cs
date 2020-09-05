@@ -98,13 +98,10 @@ namespace CeltaNavsApi.Controllers
                 productCodeWithDigit = productCodeWithDigit.PadLeft(Convert.ToInt32(modelSetting.NumberOfCharacteresPLU), '0');
                 productCodeWithDigit += "-" + productsDao.CheckDigit(_CODPROD);
 
-                XML += $"<GET TYPE=HIDDEN NAME=_SELPROD VALUE={productCodeWithDigit}>";
-                //XML += "<CONSOLE><BR><BR><BR><BR>     Quantidade: </CONSOLE>";
-                //XML += "<GET TYPE=FIELD NAME=_QUANT LIN=7 COL=4 SIZE=1>";
+                XML += $"<GET TYPE=HIDDEN NAME=_SELPROD VALUE={productCodeWithDigit}>";                
                 XML += $"<GET TYPE=HIDDEN NAME=_PERSONALIZEDCODE VALUE={_PRODUCTTABLE}>";
                 XML += $"<GET TYPE=SERIALNO NAME=_TERMINALSERIAL>";                
-                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsQuantity/get HOST=h TIMEOUT=5>";
-                //XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssalerequest/AddProduct HOST=h TIMEOUT=5>";
+                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsQuantity/get HOST=h TIMEOUT=5>";                
 
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {

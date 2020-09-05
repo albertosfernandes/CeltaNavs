@@ -84,6 +84,8 @@
     <Compile Include="Enum.cs" />
     <Compile Include="ExpansibleGroup\ModelExpansibleGroupProduct.cs" />
     <Compile Include="ExpansibleGroup\ModelExpansibleGroup.cs" />
+    <Compile Include="SaleRequest\ModelSaleRequestProductTemp.cs" />
+    <Compile Include="SaleRequest\ModelSaleRequestTemp.cs" />
     <Compile Include="Setting\ModelNavsSetting.cs" />
     <Compile Include="Pdv\ModelPdv.cs" />
     <Compile Include="Product\ModelProduct.cs" />

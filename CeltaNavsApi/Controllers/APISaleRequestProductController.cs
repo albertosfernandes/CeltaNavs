@@ -51,5 +51,24 @@ namespace CeltaNavsApi.Controllers
                 return response;
             }
         }
+
+        [HttpGet]
+        public HttpResponseMessage ChangeProductionStatus(string _saleRequestProductId, int productionstatus)
+        {
+            try
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+
+                saleRequestProdDao.ChangeStatusProduction(_saleRequestProductId, productionstatus);
+
+                return response;
+
+            }
+            catch (Exception err)
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return response;
+            }
+        }
     }
 }
