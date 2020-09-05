@@ -15,6 +15,8 @@ namespace CeltaNavs.Domain
     {
         public DbSet<ModelProduct> Products { get; set; }     
         public DbSet<ModelSaleRequest> SaleRequests { get; set; }
+        public DbSet<ModelSaleRequestTemp> SaleRequestsTemp { get; set; }
+        public DbSet<ModelSaleRequestProductTemp> SaleRequestProductsTemp { get; set; }
         public DbSet<ModelSaleRequestProduct> SaleRequestProducts { get; set; }        
         public DbSet<ModelSaleMovementFinalization> NavsFinalizations { get; set; }
         public DbSet<ModelNavsSetting> NavsSettings { get; set; }
@@ -32,7 +34,9 @@ namespace CeltaNavs.Domain
         {
             modelBuilder.Entity<ModelNavsSetting>().ToTable("navssettings");
             modelBuilder.Entity<ModelSaleRequest>().ToTable("salerequests");
-            modelBuilder.Entity<ModelSaleRequestProduct>().ToTable("salerequestproducts");            
+            modelBuilder.Entity<ModelSaleRequestTemp>().ToTable("navssalerequeststemp");
+            modelBuilder.Entity<ModelSaleRequestProduct>().ToTable("salerequestproducts");
+            modelBuilder.Entity<ModelSaleRequestProductTemp>().ToTable("navssalerequestproductstemp");
             modelBuilder.Entity<ModelSaleMovementFinalization>().ToTable("navsfinalizations");
             modelBuilder.Entity<ModelProduct>().ToTable("products");
             modelBuilder.Entity<ModelEnterprise>().ToTable("enterprises");
@@ -44,11 +48,6 @@ namespace CeltaNavs.Domain
             modelBuilder.Entity<ModelSaleRequest>().HasKey(t => t.SaleRequestId);            
 
             modelBuilder.Entity<ModelProduct>().HasKey(t => t.InternalCodeOnERP);                       
-
-           // modelBuilder.Entity<ModelSaleRequestProducts>()
-           //.HasRequired<ModelSaleRequests>(s => s.SaleRequest)
-           //.WithMany(g => g.Products)
-           //.HasForeignKey<int>(s => s.SaleRequestId);
 
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
         }

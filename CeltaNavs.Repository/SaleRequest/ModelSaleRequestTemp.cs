@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CeltaNavs.Repository.SaleRequest
+namespace CeltaNavs.Repository
 {
     public class ModelSaleRequestTemp : ModelSaleRequest
     {
