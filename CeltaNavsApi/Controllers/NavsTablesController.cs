@@ -1,5 +1,4 @@
 ﻿using CeltaNavs.Domain;
-using CeltaNavs.Domain.SaleRequest;
 using CeltaNavs.Repository;
 using CeltaNavsApi.Helpers;
 using System;
@@ -39,9 +38,7 @@ namespace CeltaNavsApi.Controllers
             string XML = "";
             try
             {                
-                modelSetting = settings.Get(_TABLESERIALNUMBER);
-
-                //var listTables = saleRequestDao.GetTablesOpen(modelSettings);
+                modelSetting = settings.Get(_TABLESERIALNUMBER);                
 
                 var listOfTables = saleRequestsDao.GetAll(modelSetting.EnterpriseId.ToString());
                 if (listOfTables.Count < 1)

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CeltaNavs.Domain.SaleRequest
+namespace CeltaNavs.Domain
 {
     public class SaleRequestDao : Persistent
     {
@@ -21,13 +21,10 @@ namespace CeltaNavs.Domain.SaleRequest
                 var saleRequest = context.SaleRequests
                    .Where(s => s.PersonalizedCode == _personalizedCode && s.EnterpriseId == enterpriseId && (!_considerUsing || !s.IsUsing))                   
                    .FirstOrDefault();
-
-                int sId = saleRequest.SaleRequestId;
-                newlistSaleRequestProducts = FixProductId(sId, enterpriseId);
-
-                //saleRequest.Products = newlistSaleRequestProducts;
                 
-
+                if(saleRequest != null)
+                newlistSaleRequestProducts = Helper.SaleRequestHelpers.FixProductId(saleRequest.SaleRequestId, enterpriseId);
+                //saleRequest.Products = newlistSaleRequestProducts;
 
                 return saleRequest;
             }
@@ -58,77 +55,76 @@ namespace CeltaNavs.Domain.SaleRequest
             }
         }
 
-
-        //Criei este método para corrigir o atributo (List<Products> do  tipo ModelSaleRequestProduct) de SaleRequest
-        //pois o ModelSaleRequestProduct não tem uma FK com Products utilizo InternalCodeOnErp que podem existir mesmo codigo
-        //para ambas empresas
-        private List<ModelSaleRequestProduct> FixProductId(int saleRequestId, int enterpriseId)
-        {
-            try
-            {
-                List<ModelSaleRequestProduct> listSaleRequestProducts = new List<ModelSaleRequestProduct>();
-
-                var itens = (from saleRequestProd in context.SaleRequestProducts
-                             join prods in context.Products
-                             on saleRequestProd.ProductInternalCodeOnErp equals prods.InternalCodeOnERP
-                             where saleRequestProd.SaleRequestId == saleRequestId && prods.EnterpriseId == enterpriseId && saleRequestProd.IsCancelled == false
-                             select new
-                             {
-                                 saleRequestProd,
-                                 prods
-
-                             }).ToList();
-
-                foreach (var saleReqprod in itens)
-                {
-                    ModelSaleRequestProduct srp = new ModelSaleRequestProduct();
-                    srp.SaleRequestProductId = saleReqprod.saleRequestProd.SaleRequestProductId;
-                    srp.SaleRequestId = saleReqprod.saleRequestProd.SaleRequestId;
-                    srp.ProductInternalCodeOnErp = saleReqprod.saleRequestProd.ProductInternalCodeOnErp;
-                    srp.Value = saleReqprod.saleRequestProd.Value;
-                    srp.Quantity = saleReqprod.saleRequestProd.Quantity;
-                    srp.Comments = saleReqprod.saleRequestProd.Comments;
-                    srp.UserId = saleReqprod.saleRequestProd.UserId;
-                    srp.IsCancelled = saleReqprod.saleRequestProd.IsCancelled;
-                    srp.Product = saleReqprod.prods;
-                    srp.TotalLiquid = saleReqprod.saleRequestProd.TotalLiquid;
-                    listSaleRequestProducts.Add(srp);
-                }
-
-                return listSaleRequestProducts;
-            }
-            catch (Exception err)
-            {
-                throw err;
-            }
-        }
-
         public void Add(ModelSaleRequest saleReq)
         {
             context.SaleRequests.Add(saleReq);
             if (saleReq.Products != null)
-            {                
+            {
                 foreach (var item in saleReq.Products)
                 {
                     context.SaleRequestProducts.Add(item);
-                }                
+                }
             }
             context.SaveChanges();
         }
 
-        public void UpdateTeste(int saleRequestId, decimal valueTotal)
-        {
-            try
-            {
-                ModelSaleRequest saleReq = context.SaleRequests.Find(saleRequestId);
-                saleReq.TotalLiquid = valueTotal;
-                context.SaveChanges();
-            }
-            catch(Exception err)
-            {
-                throw err;
-            }
-        }
+        //Criei este método para corrigir o atributo (List<Products> do  tipo ModelSaleRequestProduct) de SaleRequest
+        //pois o ModelSaleRequestProduct não tem uma FK com Products utilizo InternalCodeOnErp que podem existir mesmo codigo
+        //para ambas empresas
+        //private List<ModelSaleRequestProduct> FixProductId(int saleRequestId, int enterpriseId)
+        //{
+        //    try
+        //    {
+        //        List<ModelSaleRequestProduct> listSaleRequestProducts = new List<ModelSaleRequestProduct>();
+
+        //        var itens = (from saleRequestProd in context.SaleRequestProducts
+        //                     join prods in context.Products
+        //                     on saleRequestProd.ProductInternalCodeOnErp equals prods.InternalCodeOnERP
+        //                     where saleRequestProd.SaleRequestId == saleRequestId && prods.EnterpriseId == enterpriseId && saleRequestProd.IsCancelled == false
+        //                     select new
+        //                     {
+        //                         saleRequestProd,
+        //                         prods
+
+        //                     }).ToList();
+
+        //        foreach (var saleReqprod in itens)
+        //        {
+        //            ModelSaleRequestProduct srp = new ModelSaleRequestProduct();
+        //            srp.SaleRequestProductId = saleReqprod.saleRequestProd.SaleRequestProductId;
+        //            srp.SaleRequestId = saleReqprod.saleRequestProd.SaleRequestId;
+        //            srp.ProductInternalCodeOnErp = saleReqprod.saleRequestProd.ProductInternalCodeOnErp;
+        //            srp.Value = saleReqprod.saleRequestProd.Value;
+        //            srp.Quantity = saleReqprod.saleRequestProd.Quantity;
+        //            srp.Comments = saleReqprod.saleRequestProd.Comments;
+        //            srp.UserId = saleReqprod.saleRequestProd.UserId;
+        //            srp.IsCancelled = saleReqprod.saleRequestProd.IsCancelled;
+        //            srp.Product = saleReqprod.prods;
+        //            srp.TotalLiquid = saleReqprod.saleRequestProd.TotalLiquid;
+        //            listSaleRequestProducts.Add(srp);
+        //        }
+
+        //        return listSaleRequestProducts;
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        throw err;
+        //    }
+        //}        
+
+        //public void UpdateTeste(int saleRequestId, decimal valueTotal)
+        //{
+        //    try
+        //    {
+        //        ModelSaleRequest saleReq = context.SaleRequests.Find(saleRequestId);
+        //        saleReq.TotalLiquid = valueTotal;
+        //        context.SaveChanges();
+        //    }
+        //    catch(Exception err)
+        //    {
+        //        throw err;
+        //    }
+        //}
 
         public void Update(ModelSaleRequest _saleReq)
         {

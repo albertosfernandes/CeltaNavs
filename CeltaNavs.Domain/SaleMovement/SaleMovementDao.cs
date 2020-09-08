@@ -123,7 +123,7 @@ namespace CeltaNavs.Domain
                     finalizations.SaleMovementFinalizationId = 0;
                     finalizations.SaleMovement = null;
 
-                    finalizations.FinalizationId = CeltaNavsApi.Helpers.SaleMovementFinalizationHelpers.ConvertToBSFinalizationId(saleMovementFinalization.FinalizationId);
+                    finalizations.FinalizationId = SaleMovementFinalizationHelpers.ConvertToBSFinalizationId(saleMovementFinalization.FinalizationId);
                     
                     //finalizations.FinalizationPdvId = saleMovementFinalization.FinalizationId; id da finalizadora vinculada ao pdv
                     finalizations.Value = saleMovementFinalization.Value;

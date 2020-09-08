@@ -31,12 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CeltaNavs.Repository">
-      <HintPath>..\CeltaNavs.Repository\obj\Release\CeltaNavs.Repository.dll</HintPath>
-    </Reference>
-    <Reference Include="CeltaNavsApi">
-      <HintPath>..\CeltaNavsApi\obj\Release\CeltaNavsApi.dll</HintPath>
-    </Reference>
     <Reference Include="CeltaWare.CBS.PDV.Concentrator.Repository, Version=2018.8.7.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Celta\CBS\PDV\Concentrator\CeltaWare.CBS.PDV.Concentrator\CeltaWare.CBS.PDV.Concentrator.Repository\bin\Release\CeltaWare.CBS.PDV.Concentrator.Repository.dll</HintPath>
@@ -98,6 +92,9 @@
     <Compile Include="ExpansibleGroup\ExpansibleGroupDao.cs" />
     <Compile Include="Helper\CeltaBSConvertHelpers.cs" />
     <Compile Include="Helper\NavsSaleHelpers.cs" />
+    <Compile Include="Helper\SaleMovementFinalizationHelpers.cs" />
+    <Compile Include="Helper\SaleRequestHelpers.cs" />
+    <Compile Include="Helper\SitefHelpers.cs" />
     <Compile Include="NavsContext.cs" />
     <Compile Include="Pdv\PdvDao.cs" />
     <Compile Include="Product\ProductDao.cs" />
@@ -106,6 +103,9 @@
     <Compile Include="SaleMovement\SaleMovementFinalizationDao.cs" />
     <Compile Include="SaleRequest\SaleRequestDao.cs" />
     <Compile Include="SaleRequest\SaleRequestProductDao.cs" />
+    <Compile Include="SaleRequest\SaleRequestProductTempDao.cs" />
+    <Compile Include="SaleRequest\SaleRequestTempDao.cs" />
+    <Compile Include="Services\ConcentradorServices.cs" />
     <Compile Include="Setting\NavsSettingDao.cs" />
     <Compile Include="Persistent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -114,6 +114,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CeltaNavs.Repository\CeltaNavs.Repository.csproj">
+      <Project>{0B70D121-A29E-4B10-93D6-E77402C80DCE}</Project>
+      <Name>CeltaNavs.Repository</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

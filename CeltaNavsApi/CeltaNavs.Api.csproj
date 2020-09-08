@@ -138,6 +138,8 @@
     <Compile Include="Controllers\APINavsSettingController.cs" />
     <Compile Include="Controllers\APISaleRequestController.cs" />
     <Compile Include="Controllers\APISaleRequestProductController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\NavsCancelController.cs" />
     <Compile Include="Controllers\NavsPayController.cs" />
     <Compile Include="Controllers\NavsPeoplesController.cs" />
     <Compile Include="Controllers\NavsQuantityController.cs" />

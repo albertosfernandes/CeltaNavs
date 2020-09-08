@@ -45,7 +45,9 @@ namespace CeltaNavs.Domain
             modelBuilder.Entity<ModelExpansibleGroupProduct>().ToTable("expansiblegroupsproducts");
 
             modelBuilder.Entity<ModelSaleRequestProduct>().HasKey(t => t.SaleRequestProductId);
-            modelBuilder.Entity<ModelSaleRequest>().HasKey(t => t.SaleRequestId);            
+            modelBuilder.Entity<ModelSaleRequest>().HasKey(t => t.SaleRequestId);
+            modelBuilder.Entity<ModelSaleRequestTemp>().HasKey(t => t.SaleRequestTempId);
+            modelBuilder.Entity<ModelSaleRequestProductTemp>().HasKey(t => t.SaleRequestProductTempId);
 
             modelBuilder.Entity<ModelProduct>().HasKey(t => t.InternalCodeOnERP);                       
 

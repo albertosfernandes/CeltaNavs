@@ -58,7 +58,7 @@ namespace CeltaNavsApi.Controllers
                 XML += $"<GET TYPE=HIDDEN NAME=_PRODUCT VALUE={_SELPROD}>";
                 XML += $"<GET TYPE=HIDDEN NAME=_PERSONALIZEDSALECODE VALUE={_PERSONALIZEDCODE}>";
                 XML += $"<GET TYPE=HIDDEN NAME=_POSSERIAL VALUE={_TERMINALSERIAL}>";
-                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/AddProduct HOST=h TIMEOUT=5>";
+                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsproducts/AddProduct HOST=h TIMEOUT=5>";
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(XML, Encoding.UTF8, "application/xml")

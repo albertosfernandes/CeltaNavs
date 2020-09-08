@@ -1,5 +1,4 @@
 ﻿using CeltaNavs.Domain;
-using CeltaNavs.Domain.SaleRequest;
 using CeltaNavs.Repository;
 using CeltaNavsApi.Helpers;
 using CeltaNavsApi.Services;
@@ -14,10 +13,10 @@ using System.Web.Http;
 
 namespace CeltaNavsApi.Controllers
 {
-    public class NavsTotalizeController : ApiController
+    public class NavsTotalizeController : BaseController
     {
-        private string navsIp;
-        private string navsPort;
+        //private string navsIp;
+        //private string navsPort;
 
         NavsSettingDao navsSettingsDao = new NavsSettingDao();
         ModelNavsSetting modelSetting = new ModelNavsSetting();
@@ -29,8 +28,65 @@ namespace CeltaNavsApi.Controllers
 
         public NavsTotalizeController()
         {
-            navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+        }
+
+        [HttpGet]
+        public HttpResponseMessage Get(string _OPCAO, string _TOTALCARD, string _TOTALTERMINALSERIAL)
+        {
+            try
+            {
+                string XML = String.Empty;
+                //apenas fecha o pedido temp e salva em saleRequest
+                if (String.IsNullOrEmpty(_OPCAO)) 
+                {                    
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TOTALCARD}>";                    
+                    XML += $"<GET TYPE=HIDDEN NAME=_TSERIAL VALUE={_TOTALTERMINALSERIAL}>";
+                    XML += $"<GET TYPE=HIDDEN NAME=_OPCAO VALUE={String.Empty}>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsSaleRequest/CloseSaleRequestTemp HOST=h>";                  
+                }
+                //fecha o pedido tempo, salva em salerequest e vai para pagamentos
+                else if (_OPCAO == "0") 
+                {
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TOTALCARD}>";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TSERIAL VALUE={_TOTALTERMINALSERIAL}>";
+                    XML += $"<GET TYPE=HIDDEN NAME=_OPCAO VALUE={"0"}>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsSaleRequest/CloseSaleRequestTemp HOST=h>";                   
+                }
+                //vms para cancelamentos!!!
+                else if (_OPCAO == "1") 
+                {                   
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TOTALCARD}>";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TSERIAL VALUE={_TOTALTERMINALSERIAL}>";
+                    XML += $"<GET TYPE=HIDDEN NAME=_OPCAO VALUE={"1"}>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsSaleRequest/CloseSaleRequestTemp HOST=h>";                   
+                }
+                //opção invalida
+                else
+                {                   
+                    XML += $"<CONSOLE><BR><BR>Opcao invalida.</CONSOLE>";
+                    XML += "<delay time=1>";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TOTALCARD}>";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TSERIAL VALUE={_TOTALTERMINALSERIAL}>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsSaleRequest/get HOST=h timeout=10>";                    
+                }
+                
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+
+            }
+            catch(Exception err)
+            {
+                string message = Formatted.FormatError(err.Message);
+                string XML = $"<console>{message}</console>";
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+            }
         }
 
         [HttpGet]
@@ -39,6 +95,11 @@ namespace CeltaNavsApi.Controllers
             try
             {
                 string XML = "";
+
+                //XML += $"<WRITE_AT LINE=26 COLUMN=1>ENTER: Confirmar.</WRITE_AT>";
+                //XML += $"<WRITE_AT LINE=27 COLUMN=1>0: Solicitar Pagamentos.</WRITE_AT>";
+                //XML += $"<WRITE_AT LINE=28 COLUMN=1>1: Cancelamentos.</WRITE_AT>";
+
                 modelSetting = navsSettingsDao.Get(_TOTALTERMINALSERIAL);
                 ModelSaleMovementFinalization lastFinalization = null;
 

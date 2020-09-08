@@ -112,6 +112,40 @@ namespace CeltaNavsApi.Helpers
             }
         }
 
+        public static string SaleRequestItensTemp(List<ModelSaleRequestProductTemp> listOfItensCardTemp)
+        {
+            string XML = "";
+            try
+            {
+                XML += string.Format("{0,-7}| {1,-21}| {2,3}", "Codigo", "Descricao", "Quant." + "<BR>");
+                XML += "----------------------------------------<BR>";
+
+                int i = 0;
+                foreach (var item in listOfItensCardTemp)
+                {
+                    CeltaNavs.Repository.ModelProduct prod = new CeltaNavs.Repository.ModelProduct();
+                    string cod = item.Product.PriceLookupCode;
+                    prod.NameReduced = item.Product.NameReduced;
+                    string desc = Formatted.FormatDescriptionSummary(prod);
+                    string quant = item.Quantity.ToString();
+
+                    XML += string.Format("{0,-7}| {1,-21}| {2,3}", cod, desc, quant + "<BR>");
+                    i++;
+                    if (i > 19)
+                    {
+                        XML += "Impossível adicionar mais itens a tela.";
+                        break;
+                    }
+                }
+
+                return XML;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
         public static string SaleOrderTotalQuantity(List<ModelSaleRequestProduct> listOfItensCard)
         {
             decimal soma = 0;
@@ -121,7 +155,18 @@ namespace CeltaNavsApi.Helpers
             }
 
             return soma.ToString();
-        }       
+        }
+
+        public static string SaleOrderTotalQuantityTemp(List<ModelSaleRequestProductTemp> listOfItensCard)
+        {
+            decimal soma = 0;
+            foreach (var item in listOfItensCard)
+            {
+                soma += item.Quantity;
+            }
+
+            return soma.ToString();
+        }
 
         public static string MenuListSaleRequestProducts(List<ModelSaleRequestProduct> listOfItensCard)
         {

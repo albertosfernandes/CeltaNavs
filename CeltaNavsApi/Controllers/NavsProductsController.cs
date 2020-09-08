@@ -16,13 +16,15 @@ namespace CeltaNavsApi.Controllers
     {
         private string navsIp;
         private string navsPort;
-        NavsSettingDao navsSettingsDao = new NavsSettingDao();
-        ExpansibleGroupDao groupDao = new ExpansibleGroupDao();
-        ProductDao productsDao = new ProductDao();
+        private ModelProduct product = new ModelProduct();
+        private ModelNavsSetting modelSetting = new ModelNavsSetting();
+        private ModelExpansibleGroup groups = new ModelExpansibleGroup();
 
-        ModelNavsSetting modelSetting = new ModelNavsSetting();
-        ModelExpansibleGroup groups = new ModelExpansibleGroup();
-       
+        private NavsSettingDao navsSettingsDao = new NavsSettingDao();
+        private ExpansibleGroupDao groupDao = new ExpansibleGroupDao();
+        private ProductDao productsDao = new ProductDao();
+        private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();
+        private SaleRequestProductTempDao saleRequestProductTempDao = new SaleRequestProductTempDao();
 
         public NavsProductsController()
         {
@@ -66,26 +68,22 @@ namespace CeltaNavsApi.Controllers
                     {
                         Content = new StringContent(XML, Encoding.UTF8, "application/xml")
                     };
-                }
-
-                //if (_CODPROD == "2")
-                //{                   
-                //    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PRODUCTTABLE}>";
-                //    XML += $"<GET TYPE=HIDDEN NAME=_POSSERIAL VALUE={_TERMINALSERIAL}>";
-                //    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/CancelProduct HOST=h TIMEOUT=10>";
-
-                //    return new HttpResponseMessage(HttpStatusCode.OK)
-                //    {
-                //        Content = new StringContent(XML, Encoding.UTF8, "application/xml")
-                //    };
-                //}
+                }            
 
                 if (_CODPROD == "0")
-                {
-                    XML += "<console>Solicitando conta!!!</console>";                    
+                {                    
+                    XML += "<console>Confirmar o pedido<BR>";
+                    XML += $"----------------------------------------<BR>";
+                    XML += "</console>";
+                    XML += $"<WRITE_AT LINE=12 COLUMN=7>Confirma o fechamento do pedido?</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=26 COLUMN=1>ENTER: Confirmar.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=27 COLUMN=1>0: Solicitar Pagamentos.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=28 COLUMN=1>1: Cancelamentos.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=29 COLUMN=1>________________________________>_____</WRITE_AT>";
+                    XML += "<GET TYPE=FIELD NAME=_OPCAO LIN=29 COL=36 SIZE=3>";                    
                     XML += $"<GET TYPE=HIDDEN NAME=_TOTALCARD VALUE={_PRODUCTTABLE}>";
                     XML += $"<GET TYPE=HIDDEN NAME=_TOTALTERMINALSERIAL VALUE={_TERMINALSERIAL}>";
-                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navstotalize/gettotal HOST=h>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navstotalize/get HOST=h>";
 
                     return new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -137,17 +135,101 @@ namespace CeltaNavsApi.Controllers
                 var listOfProducts = productsDao.GetByGroup(modelSetting, _SELGROUP);
                 XML += Menu.MenuListProducts(listOfProducts);
 
-                //XML += "<CONSOLE><BR><BR>    Quantidade: <BR></CONSOLE>";
-                //XML += "<GET TYPE=FIELD NAME=_QUANT LIN=7 COL=4 SIZE=1>";
                 XML += $"<GET TYPE=HIDDEN NAME=_PERSONALIZEDCODE VALUE={_PRODUCTTABLE}>";                
                 XML += $"<GET TYPE=HIDDEN NAME=_TERMINALSERIAL VALUE={_PRODUCTTERMINALSERIAL}>";                
                 XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsQuantity/get HOST=h TIMEOUT=5>";
-                //XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/AddProduct HOST=h TIMEOUT=5>";
 
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(XML, Encoding.UTF8, "application/xml")
                 };
+            }
+            catch (Exception err)
+            {
+                string message = Formatted.FormatError(err.Message);
+                string XML = $"<console>{message}</console>";
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage AddProduct(string _QUANT, string _PRODUCT, string _PERSONALIZEDSALECODE, string _POSSERIAL)
+        {
+            try
+            {
+                string XML = "";
+                modelSetting = navsSettingsDao.GetById(_POSSERIAL);
+
+                if (_PRODUCT.Contains("-"))
+                {
+                    product = productsDao.FindByPlu(_PRODUCT, modelSetting);
+                }
+                else
+                {
+                    product = productsDao.FindByInternalCode(_PRODUCT, modelSetting);
+                }
+
+                if (product == null)
+                {
+                    XML += $"<CONSOLE>Produto nao encontrado<BR>";
+                    XML += $"----------------------------------------<BR></CONSOLE>";
+                    XML += " <DELAY TIME = 01> ";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDSALECODE}>";
+                    XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                    };
+                }                         
+
+                ModelSaleRequestTemp _saleRequestTemp = saleRequestTempDao.Get(modelSetting.EnterpriseId.ToString(), _PERSONALIZEDSALECODE, true);
+
+                if (_saleRequestTemp == null)
+                {
+                    XML += $"<CONSOLE>Erro ao carregar pedido<BR>";
+                    XML += $"----------------------------------------<BR></CONSOLE>";
+                    XML += " <DELAY TIME = 01> ";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDSALECODE}>";
+                    XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                    };
+                }
+
+                ModelSaleRequestProductTemp _saleRequestProductTemp = new ModelSaleRequestProductTemp();
+                _saleRequestProductTemp.SaleRequestTempId = _saleRequestTemp.SaleRequestTempId;
+                _saleRequestProductTemp.ProductPriceLookUpCode = product.PriceLookupCode;
+                _saleRequestProductTemp.ProductInternalCodeOnErp = product.InternalCodeOnERP;
+                _saleRequestProductTemp.Value = Convert.ToDecimal(product.SaleRetailPraticedString);
+                int quantidade = Convert.ToInt32(_QUANT);
+                if (quantidade < 1)
+                {
+                    quantidade = 1;
+                }
+                _saleRequestProductTemp.Quantity = quantidade;
+                _saleRequestProductTemp.TotalLiquid = (_saleRequestProductTemp.Value * _saleRequestProductTemp.Quantity);
+                _saleRequestTemp.Products.Add(_saleRequestProductTemp);
+                _saleRequestTemp.TotalLiquid += _saleRequestProductTemp.TotalLiquid;
+
+                //saleRequestProductTempDao.Add(_saleRequestProductTemp);
+                saleRequestTempDao.Update(_saleRequestTemp);
+
+                XML += $"<CONSOLE>Produto adicionado com sucesso<BR>";
+                XML += $"----------------------------------------<BR></CONSOLE>";
+                XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDSALECODE}>";
+                XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+
             }
             catch (Exception err)
             {

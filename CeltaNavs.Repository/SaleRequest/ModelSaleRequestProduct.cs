@@ -14,7 +14,7 @@ namespace CeltaNavs.Repository
     {
         public ModelSaleRequestProduct()
         {
-            //SaleRequest = new ModelSaleRequests();
+            
         }
 
         [Key] 

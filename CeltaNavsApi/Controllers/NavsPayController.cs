@@ -1,5 +1,4 @@
 ﻿using CeltaNavs.Domain;
-using CeltaNavs.Domain.SaleRequest;
 using CeltaNavs.Repository;
 using CeltaNavsApi.Helpers;
 using System;
@@ -13,10 +12,10 @@ using System.Web.Http;
 
 namespace CeltaNavsApi.Controllers
 {
-    public class NavsPayController : ApiController
+    public class NavsPayController : BaseController
     {
-        private string navsIp;
-        private string navsPort;
+        //private string navsIp;
+        //private string navsPort;
 
         ModelNavsSetting modelSetting = new ModelNavsSetting();
         ModelSaleMovementFinalization navsFinalization = new ModelSaleMovementFinalization();
@@ -30,8 +29,8 @@ namespace CeltaNavsApi.Controllers
 
         public NavsPayController()
         {
-            navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
         }
 
         [HttpGet]

@@ -11,7 +11,7 @@ namespace CeltaNavs.Repository
     {
         public ModelSaleRequest()
         {
-            Products = new HashSet<ModelSaleRequestProduct>();
+         
         }
 
         [Key]
@@ -26,6 +26,7 @@ namespace CeltaNavs.Repository
         public string FlagStatus { get; set; }
         public decimal TotalLiquid { get; set; }        
         public SaleRequestOrigin FlagOrigin { get; set; }
-        public virtual ICollection<ModelSaleRequestProduct> Products { get; set; }        
+        //public virtual ICollection<ModelSaleRequestProduct> Products { get; set; }        
+        public virtual List<ModelSaleRequestProduct> Products { get; set; }        
     }
 }

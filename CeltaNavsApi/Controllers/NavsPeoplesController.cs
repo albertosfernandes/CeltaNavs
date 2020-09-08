@@ -1,5 +1,4 @@
 ﻿using CeltaNavs.Domain;
-using CeltaNavs.Domain.SaleRequest;
 using CeltaNavs.Repository;
 using CeltaNavsApi.Helpers;
 using System;

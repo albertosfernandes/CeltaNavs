@@ -11,7 +11,6 @@ using CeltaNavsApi.Helpers;
 using System.Xml;
 using CeltaNavs.Domain;
 using CeltaNavs.Repository;
-using CeltaNavs.Domain.SaleRequest;
 using Newtonsoft.Json;
 
 namespace CeltaNavsApi.Controllers

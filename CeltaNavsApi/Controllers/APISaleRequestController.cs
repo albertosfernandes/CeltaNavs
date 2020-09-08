@@ -1,4 +1,4 @@
-﻿using CeltaNavs.Domain.SaleRequest;
+﻿using CeltaNavs.Domain;
 using CeltaNavs.Repository;
 using System;
 using System.Collections.Generic;
@@ -13,18 +13,19 @@ namespace CeltaNavsApi.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class APISaleRequestController : ApiController
     {        
-        SaleRequestDao saleRequestDaoNew = new SaleRequestDao();
+        private SaleRequestDao saleRequestDao = new SaleRequestDao();
+        private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();
 
         [HttpGet]
         public List<ModelSaleRequest> GetAll(string _enterpriseId)
         {
-            return saleRequestDaoNew.GetAll(_enterpriseId);
+            return saleRequestDao.GetAll(_enterpriseId);
         }
 
         [HttpGet]
         public ModelSaleRequest Get(string _enterpriseId, string _personalizedCode, bool _considerUsing)
         {
-            return saleRequestDaoNew.Get(_enterpriseId, _personalizedCode, _considerUsing);
+            return saleRequestDao.Get(_enterpriseId, _personalizedCode, _considerUsing);
         }        
 
         [HttpPost]
@@ -32,7 +33,22 @@ namespace CeltaNavsApi.Controllers
         {
             try
             {
-                saleRequestDaoNew.Add(saleRequest);
+                saleRequestDao.Add(saleRequest);
+
+                return HttpStatusCode.OK;
+            }
+            catch (Exception err)
+            {
+                return HttpStatusCode.InternalServerError;
+            }
+        }
+
+        [HttpPost]
+        public HttpStatusCode AddSaleRequestTemp(ModelSaleRequestTemp saleRequestTemp)
+        {
+            try
+            {
+                saleRequestTempDao.Add(saleRequestTemp);
 
                 return HttpStatusCode.OK;
             }
@@ -47,7 +63,7 @@ namespace CeltaNavsApi.Controllers
         {
             try
             {
-                saleRequestDaoNew.Update(_saleRequest);
+                saleRequestDao.Update(_saleRequest);
                 return HttpStatusCode.OK;
             }
             catch (Exception err)
