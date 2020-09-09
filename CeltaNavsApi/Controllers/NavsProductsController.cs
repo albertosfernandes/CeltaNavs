@@ -75,10 +75,10 @@ namespace CeltaNavsApi.Controllers
                     XML += "<console>Confirmar o pedido<BR>";
                     XML += $"----------------------------------------<BR>";
                     XML += "</console>";
-                    XML += $"<WRITE_AT LINE=12 COLUMN=7>Confirma o fechamento do pedido?</WRITE_AT>";
-                    XML += $"<WRITE_AT LINE=26 COLUMN=1>ENTER: Confirmar.</WRITE_AT>";
-                    XML += $"<WRITE_AT LINE=27 COLUMN=1>0: Solicitar Pagamentos.</WRITE_AT>";
-                    XML += $"<WRITE_AT LINE=28 COLUMN=1>1: Cancelamentos.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=12 COLUMN=4>Confirma o fechamento do pedido?</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=26 COLUMN=2>ENTER: Confirmar.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=27 COLUMN=2>0: Solicitar Pagamentos.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=28 COLUMN=2>1: Cancelamentos.</WRITE_AT>";
                     XML += $"<WRITE_AT LINE=29 COLUMN=1>________________________________>_____</WRITE_AT>";
                     XML += "<GET TYPE=FIELD NAME=_OPCAO LIN=29 COL=36 SIZE=3>";                    
                     XML += $"<GET TYPE=HIDDEN NAME=_TOTALCARD VALUE={_PRODUCTTABLE}>";

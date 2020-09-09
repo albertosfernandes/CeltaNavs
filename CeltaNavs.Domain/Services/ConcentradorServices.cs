@@ -7,7 +7,7 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Web;
 
-namespace CeltaNavsApi.Services
+namespace CeltaNavs.Domain
 {
     public class ConcentradorServices
     {

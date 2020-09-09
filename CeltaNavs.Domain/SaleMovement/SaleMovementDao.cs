@@ -135,7 +135,7 @@ namespace CeltaNavs.Domain
                     finalizations.TEFNetWorkCode = saleMovementFinalization.CODADQ;
                     finalizations.TEFFlagCode = saleMovementFinalization.TIPOCART;
                     finalizations.TEFFlagDescription = saleMovementFinalization.TIPOCART;
-                    finalizations.TEFModalityPaymentCode = saleMovementFinalization.TIPOTRANS != null ? CeltaNavsApi.Helpers.SitefHelpers.ConvertToFlagCode(saleMovementFinalization.TIPOTRANS) : null;
+                    finalizations.TEFModalityPaymentCode = saleMovementFinalization.TIPOTRANS != null ? SitefHelpers.ConvertToFlagCode(saleMovementFinalization.TIPOTRANS) : null;
                     finalizations.TEFModalityDescription = saleMovementFinalization.TIPOTRANS;
                     
                     finalizations.TEFNSUHost = saleMovementFinalization.NSUAUT;
@@ -147,7 +147,7 @@ namespace CeltaNavs.Domain
                 #endregion
                 //mandar o movimento por web-api
 
-                CeltaNavsApi.Services.ConcentradorServices _concentradorServices = new CeltaNavsApi.Services.ConcentradorServices(_navsSettings);
+                ConcentradorServices _concentradorServices = new ConcentradorServices(_navsSettings);
                 int result = _concentradorServices.ExportSaleMovement(bsSaleMovement);
 
                 return result;                                

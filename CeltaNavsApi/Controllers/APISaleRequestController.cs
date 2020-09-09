@@ -26,7 +26,28 @@ namespace CeltaNavsApi.Controllers
         public ModelSaleRequest Get(string _enterpriseId, string _personalizedCode, bool _considerUsing)
         {
             return saleRequestDao.Get(_enterpriseId, _personalizedCode, _considerUsing);
-        }        
+        }
+        
+        [HttpGet]
+        public List<ModelSaleRequest> GetProduction(string _enterpriseId)
+        {
+            try
+            {
+                return saleRequestDao.GetAll(_enterpriseId);
+                //List<ModelSaleRequest> saleRequestProductionList = new List<ModelSaleRequest>();
+                //switch (productionStatusCode)
+                //{
+                //    case 0: { return saleRequestDao.GetProduction(Convert.ToInt32(_enterpriseId), ProductionStatus.New).ToList(); }
+                //    case 1: { return saleRequestDao.GetProduction(Convert.ToInt32(_enterpriseId), ProductionStatus.InProduction); }
+                //    case 2: { return saleRequestDao.GetProduction(Convert.ToInt32(_enterpriseId), ProductionStatus.Delivered); }
+                //    default: { return saleRequestProductionList; }
+                //}
+            }
+            catch(Exception err)
+            {
+                throw err;
+            }
+        }
 
         [HttpPost]
         public HttpStatusCode AddSaleRequest(ModelSaleRequest saleRequest)

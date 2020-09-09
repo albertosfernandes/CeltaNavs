@@ -20,25 +20,76 @@ namespace CeltaNavsApi.Controllers
         private NavsSettingDao settingsDao = new NavsSettingDao();
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
         private SaleRequestProductDao saleRequestProductsDao = new SaleRequestProductDao();
+        private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();
 
         public NavsCancelController()
         {
            
         }
-
+        [HttpGet]
         public HttpResponseMessage Get(string _CANCELTABLE, string _CANCELSERIAL)
         {
             string XML = "";
+            modelSetting = settingsDao.GetById(_CANCELSERIAL);
             try
             {
-                XML += $"<CONSOLE>Informe a quantidade.<BR>";
+                XML += $"<CONSOLE>Cancelamento.<BR>";
                 XML += $"----------------------------------------<BR><BR>";
                 XML += "</CONSOLE>";
-                XML += $"<WRITE_AT LINE=28 COLUMN=1>1: Cancelar item do pedido atual.</WRITE_AT>";
-                XML += $"<WRITE_AT LINE=28 COLUMN=1>0: Cancelar todo o pedido atual.</WRITE_AT>";
+                XML += $"<WRITE_AT LINE=27 COLUMN=2>0s: Cancelar item do pedido atual.</WRITE_AT>";
+                XML += $"<WRITE_AT LINE=28 COLUMN=2>ENTER: Cancelar pedido atual.</WRITE_AT>";
                 XML += $"<WRITE_AT LINE=29 COLUMN=1>_________________Opcao Cancelamento_>____</WRITE_AT>";
-                modelSetting = settingsDao.GetById(_CANCELSERIAL);
-                
+                XML += "<GET TYPE=FIELD NAME=_OPCAO LIN=29 COL=36 SIZE=3>";
+                XML += $"<GET TYPE=HIDDEN NAME=_CANCELTABLE VALUE={_CANCELTABLE}>";
+                XML += $"<GET TYPE=HIDDEN NAME=_CANCELSERIAL VALUE={_CANCELSERIAL}>";
+                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscancel/option HOST=h>";
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+            }
+            catch (Exception err)
+            {
+                string message = Formatted.FormatError(err.Message);
+                XML += $"<console>{message}</console>";
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                };
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage Option(string _OPCAO, string _CANCELTABLE, string _CANCELSERIAL)
+        {
+            string XML = "";
+            modelSetting = settingsDao.GetById(_CANCELSERIAL);
+            var resultSaleRequest = saleRequestsDao.Get(modelSetting.EnterpriseId.ToString(), _CANCELTABLE, true);
+            var resultsaleRequestTemp = saleRequestTempDao.Get(modelSetting.EnterpriseId.ToString(), _CANCELTABLE, true);
+            try
+            {
+                XML += $"<CONSOLE>Cancelamento.<BR>";
+                XML += $"----------------------------------------<BR><BR>";
+                XML += "</CONSOLE>";
+
+                //Apaga pedido atual
+                if (String.IsNullOrEmpty(_OPCAO))
+                {
+                    if(resultsaleRequestTemp != null)
+                    {
+                        saleRequestTempDao.Delete(resultsaleRequestTemp);
+                    }
+                    else
+                    {
+                        saleRequestsDao.Delete(resultSaleRequest.SaleRequestId);
+                    }
+                    XML += $"<CONSOLE>Pedido cancelado.<BR>";
+                    XML += $"----------------------------------------<BR><BR>";
+                    XML += "</CONSOLE>";
+                }
+
+                XML += $"<GET TYPE=SERIALNO NAME=_SERIALNUMBER>";
+                XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navscommands/start HOST=h TIMEOUT=5>";
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(XML, Encoding.UTF8, "application/xml")

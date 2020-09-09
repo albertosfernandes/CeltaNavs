@@ -14,17 +14,16 @@ namespace CeltaNavs.Domain
         public ModelSaleRequest Get(string _enterpriseId, string _personalizedCode, bool _considerUsing)
         {
             try
-            {
+            {               
                 int enterpriseId = Convert.ToInt32(_enterpriseId);
                 List<ModelSaleRequestProduct> newlistSaleRequestProducts = new List<ModelSaleRequestProduct>();
-
+                
                 var saleRequest = context.SaleRequests
                    .Where(s => s.PersonalizedCode == _personalizedCode && s.EnterpriseId == enterpriseId && (!_considerUsing || !s.IsUsing))                   
                    .FirstOrDefault();
                 
                 if(saleRequest != null)
-                newlistSaleRequestProducts = Helper.SaleRequestHelpers.FixProductId(saleRequest.SaleRequestId, enterpriseId);
-                //saleRequest.Products = newlistSaleRequestProducts;
+                newlistSaleRequestProducts = Helper.SaleRequestHelpers.FixProductId(saleRequest.SaleRequestId, enterpriseId);                
 
                 return saleRequest;
             }
@@ -55,6 +54,54 @@ namespace CeltaNavs.Domain
             }
         }
 
+        public List<ModelSaleRequest> GetProduction(int _enterpriseId, ProductionStatus productioStatusCode)
+        {
+            try
+            {                
+
+                List<ModelSaleRequest> listOfSaleRequest = new List<ModelSaleRequest>();
+                using(var context = new NavsContext())
+                {
+                    var result = (from saleRequest in context.SaleRequests
+                                  join saleRequestProduct in context.SaleRequestProducts
+                                  on saleRequest.SaleRequestId equals saleRequestProduct.SaleRequestId
+                                  where saleRequestProduct.ProductionStatus == ProductionStatus.New && saleRequest.EnterpriseId == _enterpriseId
+                                  group saleRequest by saleRequest.PersonalizedCode into newGroup
+                                  select new
+                                  {
+                                      newGroup
+
+                                  }).ToList();
+
+                    //listOfSaleRequest.Add(saleRequestProduction.newGroup.ToList<ModelSaleRequest>());
+
+                    foreach (var saleRequestProduction in result)
+                    {
+                        //ModelSaleRequest sale = new ModelSaleRequest();
+                        listOfSaleRequest = saleRequestProduction.newGroup.ToList<ModelSaleRequest>();
+
+                        
+
+                        //foreach (var item in saleRequestProduction.newGroup)
+                        //{
+                        //    ModelSaleRequest sale = new ModelSaleRequest();
+                        //    sale = item;                            
+                        //    listOfSaleRequest.Add(sale);
+                        //}
+                    }
+                }
+
+               
+                
+
+                return listOfSaleRequest;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
         public void Add(ModelSaleRequest saleReq)
         {
             context.SaleRequests.Add(saleReq);
@@ -65,6 +112,12 @@ namespace CeltaNavs.Domain
                     context.SaleRequestProducts.Add(item);
                 }
             }
+            context.SaveChanges();
+        }
+
+        public void AddNew(ModelSaleRequest saleReq)
+        {
+            context.SaleRequests.Add(saleReq);           
             context.SaveChanges();
         }
 

@@ -52,6 +52,26 @@ namespace CeltaNavsApi.Controllers
             }
         }
 
+        [HttpPut]
+        public HttpResponseMessage UpdateStatus(string _saleRequestProductId, string statusproductioncocde)
+        {
+            try
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+
+                if(statusproductioncocde == "1")
+                saleRequestProdDao.MarkToProduction(_saleRequestProductId);                
+
+                return response;
+
+            }
+            catch (Exception err)
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return response;
+            }
+        }        
+
         [HttpGet]
         public HttpResponseMessage ChangeProductionStatus(string _saleRequestProductId, int productionstatus)
         {

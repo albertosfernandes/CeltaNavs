@@ -87,22 +87,47 @@ namespace CeltaNavs.Domain
         {
             try
             {
-                ModelSaleRequest saleRequest = new ModelSaleRequest();
-                saleRequest = saleRequestsDao.Get(_saleRequestTemp.EnterpriseId.ToString(), _saleRequestTemp.PersonalizedCode, true);
+                
+                ModelSaleRequest saleRequest = saleRequestsDao.Get(_saleRequestTemp.EnterpriseId.ToString(), _saleRequestTemp.PersonalizedCode, true);                
 
-                if(saleRequest == null)
+                if (saleRequest == null)
                 {
+
                     //Pedido novo     
-                    ModelSaleRequest saleReq = new ModelSaleRequest();
-                    saleReq.PersonalizedCode = _saleRequestTemp.PersonalizedCode;
-                    saleReq.DateOfCreation = DateTime.Now;
-                    saleReq.DateHourOfCreation = DateTime.Now;
-                    saleReq.EnterpriseId = _saleRequestTemp.EnterpriseId;
-                    saleReq.IsUsing = false;
-                    saleReq.Peoples = 1;
-                    saleReq.FlagStatus = "ABERTO";
-                    saleReq.FlagOrigin = SaleRequestOrigin.Concentrator;
-                    saleRequestsDao.Add(saleReq);
+                    ModelSaleRequest saleRequestNew = new ModelSaleRequest();
+                    saleRequestNew.PersonalizedCode = _saleRequestTemp.PersonalizedCode;
+                    saleRequestNew.DateOfCreation = DateTime.Now;
+                    saleRequestNew.DateHourOfCreation = DateTime.Now;
+                    saleRequestNew.EnterpriseId = _saleRequestTemp.EnterpriseId;
+                    saleRequestNew.IsUsing = false;
+                    saleRequestNew.Peoples = 1;
+                    saleRequestNew.FlagStatus = "ABERTO";
+                    saleRequestNew.FlagOrigin = SaleRequestOrigin.Concentrator;                    
+                    //saleRequestsDao.Add(saleRequestNew);
+
+                    foreach (var _saleReq in _saleRequestTemp.Products)
+                    {
+                        ModelSaleRequestProduct modeSaleReqProd = new ModelSaleRequestProduct();
+                        modeSaleReqProd.Comments = null;
+                        modeSaleReqProd.IsCancelled = false;
+                        modeSaleReqProd.IsDelivered = false;
+                        modeSaleReqProd.ProductionStatus = ProductionStatus.New;
+                        modeSaleReqProd.Quantity = _saleReq.Quantity;
+                        modeSaleReqProd.Value = Convert.ToDecimal(_saleReq.Product.SaleRetailPraticedString);
+                        modeSaleReqProd.TotalLiquid = (_saleReq.Value * _saleReq.Quantity);
+                        //modeSaleReqProd.SaleRequestId = saleRequestNew.SaleRequestId;
+                        modeSaleReqProd.ProductPriceLookUpCode = _saleReq.ProductPriceLookUpCode;
+                        modeSaleReqProd.ProductInternalCodeOnErp = _saleReq.ProductInternalCodeOnErp;
+                        //modeSaleReqProd.SaleRequest = saleRequest;
+                        //modeSaleReqProd.Product = _saleReq.Product;
+                        saleRequestNew.TotalLiquid += _saleReq.TotalLiquid;
+                        saleRequestNew.Products.Add(modeSaleReqProd);
+                    }
+
+                    //saleRequestsDao.Update(saleRequestNew);
+                    saleRequestsDao.AddNew(saleRequestNew);
+                    Delete(_saleRequestTemp);
+                    return true;
                 }
                 
                 foreach (var _saleReq in _saleRequestTemp.Products)
@@ -118,12 +143,12 @@ namespace CeltaNavs.Domain
                     modeSaleReqProd.SaleRequestId = _saleReq.SaleRequestTemp.SaleRequestTempId;
                     modeSaleReqProd.ProductPriceLookUpCode = _saleReq.ProductPriceLookUpCode;
                     modeSaleReqProd.ProductInternalCodeOnErp = _saleReq.ProductInternalCodeOnErp;
+                    modeSaleReqProd.SaleRequest = saleRequest;                    
                     saleRequest.TotalLiquid += _saleReq.TotalLiquid;
                     saleRequest.Products.Add(modeSaleReqProd);
                 }
                 
                 saleRequestsDao.Update(saleRequest);
-
                 Delete(_saleRequestTemp);
                 return true;
             }

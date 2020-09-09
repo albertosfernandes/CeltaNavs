@@ -73,7 +73,7 @@ namespace CeltaNavsApi.Controllers
                         XML += $"<CONSOLE>Novo pedido adicionado com sucesso<BR>";
                         XML += $"----------------------------------------<BR></CONSOLE>";
 
-                        XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={saleRequest.PersonalizedCode}>";
+                        XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={saleRequestTemp.PersonalizedCode}>";
                         XML += $"<GET TYPE=HIDDEN NAME=_TSERIAL VALUE={modelSetting.PosSerial}>";
                         XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssalerequest/get HOST=h TIMEOUT=5>";
                         return new HttpResponseMessage(HttpStatusCode.OK)
@@ -113,7 +113,7 @@ namespace CeltaNavsApi.Controllers
                     }
 
                     //var saleRequesProducts = saleRequestsDao.GetSaleRequestProducts(modelSetting.EnterpriseId.ToString(), mySaleRequest.SaleRequestId.ToString(), true);
-
+                    XML += "<CANCEL_KEY TYPE=DISABLE>";
                     XML += $"<CONSOLE>Comanda/Mesa:  {_TABLE}<BR>";
                     XML += "----------------------------------------<BR>";
 
@@ -148,6 +148,7 @@ namespace CeltaNavsApi.Controllers
                 else
                 {
                     string totalItens = string.Empty;
+                    XML += "<CANCEL_KEY TYPE=DISABLE>";
                     XML += $"<CONSOLE>Comanda/Mesa:  {_TABLE}<BR>";
                     XML += "----------------------------------------<BR>";
 
@@ -162,9 +163,8 @@ namespace CeltaNavsApi.Controllers
                     decimal value = resultsaleRequestTemp.TotalLiquid;
                     XML += $"Total da comanda: {value.ToString("C")}";
                     XML += "</CONSOLE>";
-
-                    if(String.IsNullOrEmpty(totalItens))
-                    XML += $"<WRITE_AT LINE=28 COLUMN=1>0: Fechar pedido.</WRITE_AT>";
+                    
+                    XML += $"<WRITE_AT LINE=28 COLUMN=1>0: Fechar pedido | Voltar.</WRITE_AT>";
                     XML += $"<WRITE_AT LINE=29 COLUMN=1>_________________Codigo_produto_>_____</WRITE_AT>";
                     XML += "<GET TYPE=FIELD NAME=_CODPROD LIN=29 COL=36 SIZE=3>";
 
@@ -211,6 +211,10 @@ namespace CeltaNavsApi.Controllers
                         XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TABLE}>";
                         XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
                         XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                        };
                     }
 
                     XML += $"<CONSOLE>Pedido gravado com sucesso.<BR>";

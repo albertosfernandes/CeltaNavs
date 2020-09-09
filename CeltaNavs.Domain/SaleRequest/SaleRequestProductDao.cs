@@ -307,6 +307,22 @@ namespace CeltaNavs.Domain
             }
         }
 
+        public void MarkToProduction(string _saleRequestProductId)
+        {            
+            try
+            {
+                ModelSaleRequestProduct saleReqProd = context.SaleRequestProducts.Find(Convert.ToInt32(_saleRequestProductId));
+
+                saleReqProd.ProductionStatus = ProductionStatus.InProduction;
+
+                context.SaveChanges();
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
         public void ChangeStatusProduction(string _saleRequestProductId, int productionStatus)
         {            
             try
