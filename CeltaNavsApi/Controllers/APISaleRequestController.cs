@@ -17,10 +17,14 @@ namespace CeltaNavsApi.Controllers
         private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();
 
         [HttpGet]
-        public List<ModelSaleRequest> GetAll(string _enterpriseId)
+        public List<ModelSaleRequest> GetAll(string _enterpriseId, int isConsiderDelivered)
         {
-            return saleRequestDao.GetAll(_enterpriseId);
-        }
+            bool validator = Convert.ToBoolean(isConsiderDelivered);
+            if (!validator)
+                return saleRequestDao.GetAll(_enterpriseId);
+            else
+                return saleRequestDao.GetAllConsiderDelivered(_enterpriseId);
+        }        
 
         [HttpGet]
         public ModelSaleRequest Get(string _enterpriseId, string _personalizedCode, bool _considerUsing)

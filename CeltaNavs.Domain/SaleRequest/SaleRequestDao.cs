@@ -54,6 +54,38 @@ namespace CeltaNavs.Domain
             }
         }
 
+        public List<ModelSaleRequest> GetAllConsiderDelivered(string _enterpriseId)
+        {
+            try
+            {
+                int enterpriseId = Convert.ToInt32(_enterpriseId);
+                List<ModelSaleRequest> SaleRequestListNew = new List<ModelSaleRequest>();
+
+                var saleRequest = context.SaleRequests
+                   .Where(s => s.EnterpriseId == enterpriseId && s.IsUsing == false)
+                   .Include(prod => prod.Products.Select(s => s.Product))
+                   .OrderBy(s => s.PersonalizedCode)
+                   .ToList();
+
+                foreach(var item in saleRequest)
+                {
+                    var teste = item.Products.Where(p => p.IsDelivered == false);
+                    if(teste.Any())
+                    {
+                        SaleRequestListNew.Add(item);
+                    }
+                }
+                
+
+
+                return SaleRequestListNew;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
         public List<ModelSaleRequest> GetProduction(int _enterpriseId, ProductionStatus productioStatusCode)
         {
             try

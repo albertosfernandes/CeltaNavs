@@ -60,6 +60,18 @@ namespace CeltaNavs.Domain
             }
         }
 
+        public List<ModelSaleRequestProduct> GetProducts(string _enterpriseId, string _saleRequestId, bool _isConsiderDelivered)
+        {
+            int idSaleRequest = Convert.ToInt32(_saleRequestId);
+            int idEnterprise = Convert.ToInt32(_enterpriseId);
+            return context.SaleRequestProducts
+                    .Where(s => s.SaleRequestId == idSaleRequest && s.SaleRequest.EnterpriseId == idEnterprise 
+                            && s.IsDelivered == _isConsiderDelivered && s.IsCancelled == false)
+                    .Include(sale => sale.SaleRequest)
+                    .Include(p => p.Product)
+                    .ToList();
+        }
+
 
         public List<ModelSaleRequestProduct> GetForDelivery(string _enterpriseId)
         {
@@ -155,19 +167,19 @@ namespace CeltaNavs.Domain
         }
 
 
-        public List<ModelSaleRequestProduct> GetAll(string _enterpriseId)
+        public List<ModelSaleRequestProduct> GetAll(string _enterpriseId, string _saleRequestId)
         {
             try
             {
-                int id = Convert.ToInt32(_enterpriseId);
-
-                var result = context.SaleRequestProducts
-                            .Where(s => s.IsDelivered == false && s.IsCancelled == false && s.SaleRequest.EnterpriseId == id)
+                int idEnterprise = Convert.ToInt32(_enterpriseId);
+                int salaRequestId = Convert.ToInt32(_saleRequestId);
+                return context.SaleRequestProducts
+                            .Where(s => s.IsDelivered == false && s.IsCancelled == false 
+                                                               && s.SaleRequest.EnterpriseId == idEnterprise
+                                                               && s.SaleRequest.SaleRequestId == salaRequestId)
                             .Include(sale => sale.SaleRequest)
                             .Include(p => p.Product)
-                            .ToList();
-
-                return result;
+                            .ToList();                
                             
             }
             catch(Exception err)
@@ -314,6 +326,24 @@ namespace CeltaNavs.Domain
                 ModelSaleRequestProduct saleReqProd = context.SaleRequestProducts.Find(Convert.ToInt32(_saleRequestProductId));
 
                 saleReqProd.ProductionStatus = ProductionStatus.InProduction;
+
+                context.SaveChanges();
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public void MarkToReleased(string _saleRequestProductId)
+        {
+            int _id = Convert.ToInt32(_saleRequestProductId);
+            try
+            {
+                ModelSaleRequestProduct saleReqProd = context.SaleRequestProducts.Find(_id);
+
+                saleReqProd.ProductionStatus = ProductionStatus.Delivered;
+
 
                 context.SaveChanges();
             }

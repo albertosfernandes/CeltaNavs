@@ -22,6 +22,12 @@ namespace CeltaNavsApi.Controllers
         }
 
         [HttpGet]
+        public List<ModelSaleRequestProduct> Get(string _enterpriseId, string saleRequesId)
+        {
+            return saleRequestProdDao.GetAll(_enterpriseId, saleRequesId);
+        }
+
+        [HttpGet]
         public List<ModelSaleRequestProduct> GetForDelivery(string _enterpriseId)
         {
             return saleRequestProdDao.GetForDelivery(_enterpriseId);
@@ -31,6 +37,12 @@ namespace CeltaNavsApi.Controllers
         public List<ModelSaleRequestProduct> GetDelivered(string _enterpriseId)
         {
             return saleRequestProdDao.GetDelivered(_enterpriseId);
+        }
+
+        [HttpGet]
+        public List<ModelSaleRequestProduct> GetIsDelivered(string _enterpriseId, string _saleRequestId)
+        {
+            return saleRequestProdDao.GetProducts(_enterpriseId, _saleRequestId, true);
         }
 
         [HttpPut]
@@ -59,8 +71,10 @@ namespace CeltaNavsApi.Controllers
             {
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
 
-                if(statusproductioncocde == "1")
-                saleRequestProdDao.MarkToProduction(_saleRequestProductId);                
+                if (statusproductioncocde == "1")
+                    saleRequestProdDao.MarkToProduction(_saleRequestProductId);
+                else if (statusproductioncocde == "2")
+                    saleRequestProdDao.MarkToReleased(_saleRequestProductId);
 
                 return response;
 
