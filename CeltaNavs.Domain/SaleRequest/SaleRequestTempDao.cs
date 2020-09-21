@@ -63,9 +63,16 @@ namespace CeltaNavs.Domain
             //ModelSaleRequestTemp mysaleRequestTemp = new ModelSaleRequestTemp();
             //mysaleRequestTemp.EnterpriseId = _enterpriseId;
             //mysaleRequestTemp.PersonalizedCode = _personalizedsalecode;
-
-            context.SaleRequestsTemp.Add(saleRequestTemp);            
-            context.SaveChanges();
+            try
+            {
+                context.SaleRequestsTemp.Add(saleRequestTemp);
+                
+                context.SaveChanges();
+            }
+            catch(Exception err)
+            {
+                throw err;
+            }
         }
 
         public void Update(ModelSaleRequestTemp _saleReqTemp)
@@ -153,6 +160,86 @@ namespace CeltaNavs.Domain
                 return true;
             }
             catch(Exception err)
+            {
+                return false;
+                throw err;
+            }
+        }
+
+        public bool FixAndFinish(ModelSaleRequestTemp _saleRequestTemp)
+        {
+            try
+            {
+
+                ModelSaleRequest saleRequest = saleRequestsDao.Get(_saleRequestTemp.EnterpriseId.ToString(), _saleRequestTemp.PersonalizedCode, true);
+
+                if (saleRequest == null)
+                {
+
+                    //Pedido novo     
+                    ModelSaleRequest saleRequestNew = new ModelSaleRequest();
+                    saleRequestNew.PersonalizedCode = _saleRequestTemp.PersonalizedCode;
+                    saleRequestNew.DateOfCreation = DateTime.Now;
+                    saleRequestNew.DateHourOfCreation = DateTime.Now;
+                    saleRequestNew.EnterpriseId = _saleRequestTemp.EnterpriseId;
+                    saleRequestNew.IsUsing = false;
+                    saleRequestNew.Peoples = 1;
+                    saleRequestNew.FlagStatus = "ABERTO";
+                    saleRequestNew.FlagOrigin = SaleRequestOrigin.Concentrator;
+                    //saleRequestsDao.Add(saleRequestNew);
+
+                    foreach (var _saleReq in _saleRequestTemp.Products)
+                    {
+                        ModelSaleRequestProduct modeSaleReqProd = new ModelSaleRequestProduct();
+                        modeSaleReqProd.Comments = null;
+                        modeSaleReqProd.IsCancelled = false;
+                        modeSaleReqProd.IsDelivered = false;
+                        modeSaleReqProd.ProductionStatus = ProductionStatus.New;
+                        modeSaleReqProd.Quantity = _saleReq.Quantity;
+                        modeSaleReqProd.Value = Convert.ToDecimal(_saleReq.Product.SaleRetailPraticedString);
+                        modeSaleReqProd.TotalLiquid = (_saleReq.Value * _saleReq.Quantity);
+                        //modeSaleReqProd.SaleRequestId = saleRequestNew.SaleRequestId;
+                        modeSaleReqProd.ProductPriceLookUpCode = _saleReq.ProductPriceLookUpCode;
+                        modeSaleReqProd.ProductInternalCodeOnErp = _saleReq.ProductInternalCodeOnErp;
+                        //modeSaleReqProd.SaleRequest = saleRequest;
+                        //modeSaleReqProd.Product = _saleReq.Product;
+                        saleRequestNew.TotalLiquid += _saleReq.TotalLiquid;
+                        saleRequestNew.Products.Add(modeSaleReqProd);
+                    }
+
+                    //saleRequestsDao.Update(saleRequestNew);
+                    saleRequestsDao.AddNew(saleRequestNew);
+                    Delete(_saleRequestTemp);
+                    return true;
+                }
+
+                
+                foreach (var _saleReq in _saleRequestTemp.Products)
+                {
+                    
+
+
+                    ModelSaleRequestProduct modeSaleReqProd = new ModelSaleRequestProduct();
+                    modeSaleReqProd.Comments = null;
+                    modeSaleReqProd.IsCancelled = false;
+                    modeSaleReqProd.IsDelivered = false;
+                    modeSaleReqProd.ProductionStatus = ProductionStatus.New;
+                    modeSaleReqProd.Quantity = _saleReq.Quantity;
+                    modeSaleReqProd.Value = Convert.ToDecimal(_saleReq.Product.SaleRetailPraticedString);
+                    modeSaleReqProd.TotalLiquid = (_saleReq.Value * _saleReq.Quantity);
+                    modeSaleReqProd.SaleRequestId = _saleReq.SaleRequestTemp.SaleRequestTempId;
+                    modeSaleReqProd.ProductPriceLookUpCode = _saleReq.ProductPriceLookUpCode;
+                    modeSaleReqProd.ProductInternalCodeOnErp = _saleReq.ProductInternalCodeOnErp;
+                    modeSaleReqProd.SaleRequest = saleRequest;
+                    saleRequest.TotalLiquid += _saleReq.TotalLiquid;
+                    saleRequest.Products.Add(modeSaleReqProd);
+                }
+
+                saleRequestsDao.Update(saleRequest);
+                Delete(_saleRequestTemp);
+                return true;
+            }
+            catch (Exception err)
             {
                 return false;
                 throw err;

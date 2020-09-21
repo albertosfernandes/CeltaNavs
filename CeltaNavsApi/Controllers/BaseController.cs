@@ -19,6 +19,9 @@ namespace CeltaNavsApi.Controllers
         //protected ModelNavsSetting modelSetting = new ModelNavsSetting();
         //protected NavsSettingDao settingsDao = new NavsSettingDao();
 
+        protected NavsSettingDao settingsdao = new NavsSettingDao();
+        protected ModelNavsSetting modelSetting = new ModelNavsSetting();
+
 
         public BaseController()
         {

@@ -12,22 +12,22 @@ using System.Web.Http;
 
 namespace CeltaNavsApi.Controllers
 {
-    public class NavsGroupsController : ApiController
+    public class NavsGroupsController : BaseController
     {
-        private string navsIp;
-        private string navsPort;
+        //private string navsIp;
+        //private string navsPort;
 
         ModelExpansibleGroup expandableGroups = new ModelExpansibleGroup();
-        ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //ModelNavsSetting modelSetting = new ModelNavsSetting();
 
-        NavsSettingDao navsSettingsDao = new NavsSettingDao();
+        //NavsSettingDao navsSettingsDao = new NavsSettingDao();
         ExpansibleGroupDao groupDao = new ExpansibleGroupDao();
 
 
         public NavsGroupsController()
         {
-            navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
         }
 
         [HttpGet]
@@ -36,7 +36,7 @@ namespace CeltaNavsApi.Controllers
             string XML = $"";
             try
             {
-                modelSetting = navsSettingsDao.Get(_GROUPSTERMINALSERIAL);
+                modelSetting = settingsdao.Get(_GROUPSTERMINALSERIAL);
                 List<ModelExpansibleGroup> listOfGroup = groupDao.Get(modelSetting);
 
                 XML += "<CONSOLE>  Lista de Grupos<BR>";

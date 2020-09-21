@@ -12,24 +12,24 @@ using System.Web.Http;
 
 namespace CeltaNavsApi.Controllers
 {
-    public class NavsTablesController : ApiController
+    public class NavsTablesController : BaseController
     {
-        private string navsIp;
-        private string navsPort;
-        private HttpClient _httpClient = null;
+        //private string navsIp;
+        //private string navsPort;
+        //private HttpClient _httpClient = null;
 
-        private BkpSaleRequestDao saleRequestDao = new BkpSaleRequestDao();
+        //private BkpSaleRequestDao saleRequestDao = new BkpSaleRequestDao();
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
-        ModelNavsSetting modelSetting = new ModelNavsSetting();
-        NavsSettingDao settings = new NavsSettingDao();
+        //ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //NavsSettingDao settings = new NavsSettingDao();
 
         public NavsTablesController()
         {
-            navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
-            _httpClient = new HttpClient();
-            _httpClient.Timeout = new TimeSpan(0, 0, 30);
-            _httpClient.BaseAddress = new Uri($"http://{navsIp}:{navsPort}");
+            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            //_httpClient = new HttpClient();
+            //_httpClient.Timeout = new TimeSpan(0, 0, 30);
+            //_httpClient.BaseAddress = new Uri($"http://{navsIp}:{navsPort}");
         }
 
         [HttpGet]
@@ -38,7 +38,7 @@ namespace CeltaNavsApi.Controllers
             string XML = "";
             try
             {                
-                modelSetting = settings.Get(_TABLESERIALNUMBER);                
+                modelSetting = settingsdao.Get(_TABLESERIALNUMBER);                
 
                 var listOfTables = saleRequestsDao.GetAll(modelSetting.EnterpriseId.ToString());
                 if (listOfTables.Count < 1)

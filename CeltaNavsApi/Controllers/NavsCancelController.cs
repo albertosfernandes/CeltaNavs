@@ -14,10 +14,10 @@ namespace CeltaNavsApi.Controllers
 {
     public class NavsCancelController : BaseController
     {        
-        private ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //private ModelNavsSetting modelSetting = new ModelNavsSetting();
         private ModelSaleRequest saleRequest = new ModelSaleRequest();
 
-        private NavsSettingDao settingsDao = new NavsSettingDao();
+        //private NavsSettingDao settingsDao = new NavsSettingDao();
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
         private SaleRequestProductDao saleRequestProductsDao = new SaleRequestProductDao();
         private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();
@@ -30,7 +30,7 @@ namespace CeltaNavsApi.Controllers
         public HttpResponseMessage Get(string _CANCELTABLE, string _CANCELSERIAL)
         {
             string XML = "";
-            modelSetting = settingsDao.GetById(_CANCELSERIAL);
+            modelSetting = settingsdao.GetById(_CANCELSERIAL);
             try
             {
                 XML += $"<CONSOLE>Cancelamento.<BR>";
@@ -63,7 +63,7 @@ namespace CeltaNavsApi.Controllers
         public HttpResponseMessage Option(string _OPCAO, string _CANCELTABLE, string _CANCELSERIAL)
         {
             string XML = "";
-            modelSetting = settingsDao.GetById(_CANCELSERIAL);
+            modelSetting = settingsdao.GetById(_CANCELSERIAL);
             var resultSaleRequest = saleRequestsDao.Get(modelSetting.EnterpriseId.ToString(), _CANCELTABLE, true);
             var resultsaleRequestTemp = saleRequestTempDao.Get(modelSetting.EnterpriseId.ToString(), _CANCELTABLE, true);
             try
@@ -113,7 +113,7 @@ namespace CeltaNavsApi.Controllers
             {
                 string XML = "";
 
-                modelSetting = settingsDao.Get(_POSSERIAL);
+                modelSetting = settingsdao.Get(_POSSERIAL);
                 var mySaleRequestId = saleRequestsDao.GetById(modelSetting.EnterpriseId.ToString(), _TABLE, false);
                 //var listItensSaleReq = saleRequestDao.GetItensSaleRequest(modelSettings, _TABLE);
                 var listOfItensSaleReq = saleRequestsDao.GetSaleRequestProducts(modelSetting.EnterpriseId.ToString(), mySaleRequestId.ToString(), false);
@@ -156,7 +156,7 @@ namespace CeltaNavsApi.Controllers
                 XML += $"<console>Pedido: {_CARDREMOVE}<BR>";
                 XML += $"<console>Serial: {_REMOVETERMINALSERIAL}<BR></console>";
                 XML += "<get type=anykey>";
-                modelSetting = settingsDao.Get(_REMOVETERMINALSERIAL);
+                modelSetting = settingsdao.Get(_REMOVETERMINALSERIAL);
                 saleRequestProductsDao.CancelIten(_SELMOVID);
 
                 saleRequest = saleRequestsDao.Get(modelSetting.EnterpriseId.ToString(), _CARDREMOVE, false);

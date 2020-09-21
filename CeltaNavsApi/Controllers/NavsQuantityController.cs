@@ -12,20 +12,20 @@ using System.Web.Http;
 
 namespace CeltaNavsApi.Controllers
 {
-    public class NavsQuantityController : ApiController
+    public class NavsQuantityController : BaseController
     {
-        private string navsIp;
-        private string navsPort;
+        //private string navsIp;
+        //private string navsPort;
 
         public NavsQuantityController()
         {
-            navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
         }
 
-        ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //ModelNavsSetting modelSetting = new ModelNavsSetting();
 
-        NavsSettingDao settingsDao = new NavsSettingDao();
+        //NavsSettingDao settingsDao = new NavsSettingDao();
         ProductDao productsDao = new ProductDao();
 
         public HttpResponseMessage Get(string _SELPROD, string _PERSONALIZEDCODE, string _TERMINALSERIAL)
@@ -33,7 +33,7 @@ namespace CeltaNavsApi.Controllers
             string XML = "";
             try
             {
-                modelSetting = settingsDao.GetById(_TERMINALSERIAL);
+                modelSetting = settingsdao.GetById(_TERMINALSERIAL);
                 ModelProduct myproduct = new ModelProduct();
                 if (_SELPROD.Contains("-"))
                 {
@@ -42,6 +42,21 @@ namespace CeltaNavsApi.Controllers
                 else
                 {
                     myproduct = productsDao.FindByInternalCode(_SELPROD, modelSetting);
+                }
+
+                if(myproduct == null)
+                {
+                    XML += $"<CONSOLE>Codigo de produto nao encontrado.<BR>";
+                    XML += $"----------------------------------------<BR><BR>";
+                    XML += $"Codigo: {_SELPROD}<BR></CONSOLE>";
+                    XML += " <DELAY TIME = 01> ";
+                    XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDCODE}>";
+                    XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                    };
                 }
 
                 XML += $"<CONSOLE>Informe a quantidade.<BR>";

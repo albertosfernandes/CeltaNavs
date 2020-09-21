@@ -24,14 +24,14 @@ namespace CeltaNavsApi.Controllers
 
         ModelSaleRequest saleRequest = new ModelSaleRequest();
         ModelSaleRequestTemp saleRequestTemp = new ModelSaleRequestTemp();
-        ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //ModelNavsSetting modelSetting = new ModelNavsSetting();
         ModelSaleRequestProduct saleRequestProducts = new ModelSaleRequestProduct();        
         ModelProduct product = new ModelProduct();
         //SaleRequestDao saleRequestDaoNew = new SaleRequestDao();
         private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();        
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
         private SaleRequestProductDao saleRequestProductsDao = new SaleRequestProductDao();        
-        private NavsSettingDao settingsDao = new NavsSettingDao();
+        //private NavsSettingDao settingsDao = new NavsSettingDao();
         private ProductDao productsDao = new ProductDao();
 
         public NavsSaleRequestController()
@@ -52,7 +52,7 @@ namespace CeltaNavsApi.Controllers
             string XML = "";
             try
             {
-                modelSetting = settingsDao.GetById(_TSERIAL);                
+                modelSetting = settingsdao.GetById(_TSERIAL);                
                 var resultSaleRequest = saleRequestsDao.Get(modelSetting.EnterpriseId.ToString(), _TABLE, false);
                 var resultsaleRequestTemp = saleRequestTempDao.Get(modelSetting.EnterpriseId.ToString(), _TABLE, false);
 
@@ -113,7 +113,7 @@ namespace CeltaNavsApi.Controllers
                     }
 
                     //var saleRequesProducts = saleRequestsDao.GetSaleRequestProducts(modelSetting.EnterpriseId.ToString(), mySaleRequest.SaleRequestId.ToString(), true);
-                    XML += "<CANCEL_KEY TYPE=DISABLE>";
+                    //XML += "<CANCEL_KEY TYPE=DISABLE>";
                     XML += $"<CONSOLE>Comanda/Mesa:  {_TABLE}<BR>";
                     XML += "----------------------------------------<BR>";
 
@@ -127,8 +127,21 @@ namespace CeltaNavsApi.Controllers
                     XML += $"Total da comanda: {value.ToString("C")}";
                     XML += "</CONSOLE>";
 
+                    if(resultsaleRequestTemp != null)
+                    {
+                        if (resultsaleRequestTemp.Products?.Any() == true)
+                        {
+                            XML += $"<CONSOLE><BR>----------------------------------------<BR>";
+                            XML += "Novos itens:  {_TABLE}<BR>";
+                            XML += "----------------------------------------<BR>";
+                            XML += Menu.SaleRequestItensTemp(resultsaleRequestTemp.Products);
+                            XML += "----------------------------------------<BR>";
+                            XML += "</CONSOLE>";
+                        }
+                    }
+                    
 
-                    XML += $"<WRITE_AT LINE=28 COLUMN=1>0: Fechar pedido.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=28 COLUMN=1>0: Fecha pedido.</WRITE_AT>";
                     XML += $"<WRITE_AT LINE=29 COLUMN=1>_________________Codigo_produto_>_____</WRITE_AT>";
 
                     XML += "<GET TYPE=FIELD NAME=_CODPROD LIN=29 COL=36 SIZE=3>";
@@ -144,27 +157,42 @@ namespace CeltaNavsApi.Controllers
                         Content = new StringContent(XML, Encoding.UTF8, "application/xml")
                     };
                 }
-                //pedido nao existe ainda esta na tabela temp
+                //pedido nao salvo em SAleRequest, ainda esta na tabela temp
                 else
                 {
                     string totalItens = string.Empty;
                     XML += "<CANCEL_KEY TYPE=DISABLE>";
+
                     XML += $"<CONSOLE>Comanda/Mesa:  {_TABLE}<BR>";
                     XML += "----------------------------------------<BR>";
 
-                    if(resultsaleRequestTemp.Products?.Any() == true)
-                        XML += Menu.SaleRequestItensTemp(resultsaleRequestTemp.Products);
-                    XML += "----------------------------------------<BR>";
+                    if(resultSaleRequest != null)
+                    {
+                        if(resultSaleRequest.Products?.Any() == true)
+                        {
+                            XML += Menu.SaleRequestItens(resultSaleRequest.Products.ToList<ModelSaleRequestProduct>());
+                            XML += "----------------------------------------<BR>";
 
+                            totalItens = Menu.SaleOrderTotalQuantity(resultSaleRequest.Products.ToList<ModelSaleRequestProduct>());
+
+                            XML += $"Total itens: {totalItens}<BR>";
+                            decimal value = resultSaleRequest.TotalLiquid;
+                            XML += $"Total da comanda: {value.ToString("C")}";
+                        }                        
+                    }
+                                     
+ 
                     if (resultsaleRequestTemp.Products?.Any() == true)
-                        totalItens = Menu.SaleOrderTotalQuantityTemp(resultsaleRequestTemp.Products);
+                    {
+                        XML += $"<BR>----------------------------------------<BR>";
+                        XML += $"Novos itens:  {_TABLE}<BR>";
+                        XML += "----------------------------------------<BR>";
+                        XML += Menu.SaleRequestItensTemp(resultsaleRequestTemp.Products);
+                        XML += "----------------------------------------<BR>";                        
+                    }
 
-                    XML += $"Total itens: {totalItens}<BR>";
-                    decimal value = resultsaleRequestTemp.TotalLiquid;
-                    XML += $"Total da comanda: {value.ToString("C")}";
                     XML += "</CONSOLE>";
-                    
-                    XML += $"<WRITE_AT LINE=28 COLUMN=1>0: Fechar pedido | Voltar.</WRITE_AT>";
+                    XML += $"<WRITE_AT LINE=28 COLUMN=1>0: Fecha pedido | Volta.</WRITE_AT>";
                     XML += $"<WRITE_AT LINE=29 COLUMN=1>_________________Codigo_produto_>_____</WRITE_AT>";
                     XML += "<GET TYPE=FIELD NAME=_CODPROD LIN=29 COL=36 SIZE=3>";
 
@@ -197,49 +225,66 @@ namespace CeltaNavsApi.Controllers
             string XML = "";
             try
             {
-                modelSetting = settingsDao.GetById(_TSERIAL);
+                modelSetting = settingsdao.GetById(_TSERIAL);
                 
                 //apenas fecha o pedido da tabela temp e grava na sale request
                 if (_OPCAO == "" || String.IsNullOrEmpty(_OPCAO))
                 {
                     saleRequestTemp = saleRequestTempDao.Get(modelSetting.EnterpriseId.ToString(), _TABLE, true);
-                    if(!saleRequestTempDao.Finish(saleRequestTemp))
+                    if(saleRequestTemp == null)
                     {
-                        XML += $"<CONSOLE>Erro na gravar pedido.<BR>";
+                        XML += $"<CONSOLE>Nenhum item adicionado.<BR>";
                         XML += $"----------------------------------------<BR></CONSOLE>";
-                        XML += " <DELAY TIME = 01> ";
-                        XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TABLE}>";
-                        XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
-                        XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
-                        return new HttpResponseMessage(HttpStatusCode.OK)
-                        {
-                            Content = new StringContent(XML, Encoding.UTF8, "application/xml")
-                        };
+                        XML += " <DELAY TIME = 01>";
+                        XML += $"<GET TYPE=SERIALNO NAME=_SERIALNUMBER>";
+                        XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsCommands/start HOST=h TIMEOUT=5>";
                     }
+                    else
+                    {
+                        if (!saleRequestTempDao.Finish(saleRequestTemp))
+                        {
+                            XML += $"<CONSOLE>Erro ao gravar pedido temporario.<BR>";
+                            XML += $"----------------------------------------<BR></CONSOLE>";
+                            XML += " <DELAY TIME = 01> ";
+                            XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TABLE}>";
+                            XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                            XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent(XML, Encoding.UTF8, "application/xml")
+                            };
+                        }
 
-                    XML += $"<CONSOLE>Pedido gravado com sucesso.<BR>";
-                    XML += $"----------------------------------------<BR></CONSOLE>";
-                    XML += " <DELAY TIME = 01>";                    
-                    XML += $"<GET TYPE=SERIALNO NAME=_SERIALNUMBER>";
-                    XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsCommands/start HOST=h TIMEOUT=5>";                    
+                        XML += $"<CONSOLE>Pedido gravado com sucesso.<BR>";
+                        XML += $"----------------------------------------<BR></CONSOLE>";
+                        XML += " <DELAY TIME = 01>";
+                        XML += $"<GET TYPE=SERIALNO NAME=_SERIALNUMBER>";
+                        XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsCommands/start HOST=h TIMEOUT=5>";
+                    }
+                                  
                 }
                 //fecha o pedido, grava na SaleReQuest e vai para pagamentos
                 else if (Convert.ToInt32(_OPCAO) == 0) 
                 {
                     saleRequestTemp = saleRequestTempDao.Get(modelSetting.EnterpriseId.ToString(), _TABLE, true);
-                    if (!saleRequestTempDao.Finish(saleRequestTemp))
+                    if(saleRequestTemp != null)
                     {
-                        XML += $"<CONSOLE>Erro na gravar pedido.<BR>";
-                        XML += $"----------------------------------------<BR></CONSOLE>";
-                        XML += " <DELAY TIME = 01> ";
-                        XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TABLE}>";
-                        XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
-                        XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
-                    }
+                        if (!saleRequestTempDao.Finish(saleRequestTemp))
+                        {
+                            XML += $"<CONSOLE>Erro na gravar pedido.<BR>";
+                            XML += $"----------------------------------------<BR></CONSOLE>";
+                            XML += " <DELAY TIME = 01> ";
+                            XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_TABLE}>";
+                            XML += $"<GET TYPE=SERIALNO NAME=_TSERIAL>";
+                            XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navssaleRequest/get HOST=h TIMEOUT=5>";
+                        }
 
-                    XML += $"<CONSOLE>Pedido gravado com sucesso.<BR>";
-                    XML += $"----------------------------------------<BR></CONSOLE>";
-                    XML += " <DELAY TIME = 01>";
+                        XML += $"<CONSOLE>Pedido gravado com sucesso.<BR>";
+                        XML += $"----------------------------------------<BR></CONSOLE>";
+                        XML += " <DELAY TIME = 01>";
+                    }
+                   
+                  
                     XML += $"<GET TYPE=HIDDEN NAME=_TOTALCARD VALUE={_TABLE}>";                    
                     XML += $"<GET TYPE=SERIALNO NAME=_TOTALTERMINALSERIAL>";
                     XML += $"<POST RC_NAME=v IP={navsIp} PORT={navsPort} RESOURCE=/api/navsTotalize/GetTotal HOST=h TIMEOUT=5>";
@@ -284,7 +329,7 @@ namespace CeltaNavsApi.Controllers
             try
             {
                 string XML = "";                
-                modelSetting = settingsDao.GetById(_POSSERIAL);
+                modelSetting = settingsdao.GetById(_POSSERIAL);
                 ModelSaleRequest saleRequest = saleRequestsDao.Get(modelSetting.EnterpriseId.ToString(), _PERSONALIZEDSALECODE, true);
 
                 if (_PRODUCT.Contains("-"))

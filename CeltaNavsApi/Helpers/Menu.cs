@@ -112,6 +112,7 @@ namespace CeltaNavsApi.Helpers
             }
         }
 
+
         public static string SaleRequestItensTemp(List<ModelSaleRequestProductTemp> listOfItensCardTemp)
         {
             string XML = "";

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Text;
 using System.Web.Configuration;
 using System.Web.Http;
@@ -12,24 +13,25 @@ using CeltaNavsApi.Helpers;
 
 namespace CeltaNavsApi.Controllers
 {
-    public class NavsProductsController : ApiController
+    public class NavsProductsController : BaseController
     {
-        private string navsIp;
-        private string navsPort;
+        //private string navsIp;
+        //private string navsPort;
         private ModelProduct product = new ModelProduct();
-        private ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //private ModelNavsSetting modelSetting = new ModelNavsSetting();
         private ModelExpansibleGroup groups = new ModelExpansibleGroup();
 
-        private NavsSettingDao navsSettingsDao = new NavsSettingDao();
+        //private NavsSettingDao navsSettingsDao = new NavsSettingDao();
         private ExpansibleGroupDao groupDao = new ExpansibleGroupDao();
         private ProductDao productsDao = new ProductDao();
+        private SaleRequestDao saleRequestsDao = new SaleRequestDao();
         private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();
         private SaleRequestProductTempDao saleRequestProductTempDao = new SaleRequestProductTempDao();
 
         public NavsProductsController()
         {
-            navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
         }
 
         public HttpResponseMessage Get(string _CODPROD, string _PRODUCTTABLE, string _TERMINALSERIAL)
@@ -37,8 +39,8 @@ namespace CeltaNavsApi.Controllers
             string XML = "";
             try
             {
-                modelSetting = navsSettingsDao.GetById(_TERMINALSERIAL);
-
+                modelSetting = settingsdao.GetById(_TERMINALSERIAL);
+                
                 if (_CODPROD == "" || String.IsNullOrEmpty(_CODPROD))
                 {
 
@@ -71,7 +73,8 @@ namespace CeltaNavsApi.Controllers
                 }            
 
                 if (_CODPROD == "0")
-                {                    
+                {
+                    XML += "<CANCEL_KEY TYPE=DISABLE>";
                     XML += "<console>Confirmar o pedido<BR>";
                     XML += $"----------------------------------------<BR>";
                     XML += "</console>";
@@ -126,7 +129,7 @@ namespace CeltaNavsApi.Controllers
             {
                 string XML = "";
 
-                modelSetting = navsSettingsDao.GetById(_PRODUCTTERMINALSERIAL);
+                modelSetting = settingsdao.GetById(_PRODUCTTERMINALSERIAL);
                 XML += "<CONSOLE>Lista de produtos<BR>";
                 XML += "----------------------------------------<BR>";
 
@@ -161,7 +164,7 @@ namespace CeltaNavsApi.Controllers
             try
             {
                 string XML = "";
-                modelSetting = navsSettingsDao.GetById(_POSSERIAL);
+                modelSetting = settingsdao.GetById(_POSSERIAL);
 
                 if (_PRODUCT.Contains("-"))
                 {
@@ -187,10 +190,11 @@ namespace CeltaNavsApi.Controllers
                 }                         
 
                 ModelSaleRequestTemp _saleRequestTemp = saleRequestTempDao.Get(modelSetting.EnterpriseId.ToString(), _PERSONALIZEDSALECODE, true);
+                var resultSaleRequest = saleRequestsDao.Get(modelSetting.EnterpriseId.ToString(), _PERSONALIZEDSALECODE, false);
 
-                if (_saleRequestTemp == null)
+                if (_saleRequestTemp == null && resultSaleRequest == null)
                 {
-                    XML += $"<CONSOLE>Erro ao carregar pedido<BR>";
+                    XML += $"<CONSOLE>Erro ao carregar pedido temporario<BR>";                    
                     XML += $"----------------------------------------<BR></CONSOLE>";
                     XML += " <DELAY TIME = 01> ";
                     XML += $"<GET TYPE=HIDDEN NAME=_TABLE VALUE={_PERSONALIZEDSALECODE}>";
@@ -200,6 +204,15 @@ namespace CeltaNavsApi.Controllers
                     {
                         Content = new StringContent(XML, Encoding.UTF8, "application/xml")
                     };
+                }
+                else if (resultSaleRequest != null && _saleRequestTemp == null)
+                {
+                    _saleRequestTemp = new ModelSaleRequestTemp();
+                    //preciso carrega-lo na tabela temp!!!!!
+                    _saleRequestTemp.PersonalizedCode = resultSaleRequest.PersonalizedCode;
+                    _saleRequestTemp.EnterpriseId = resultSaleRequest.EnterpriseId;
+
+                    saleRequestTempDao.Add(_saleRequestTemp);
                 }
 
                 ModelSaleRequestProductTemp _saleRequestProductTemp = new ModelSaleRequestProductTemp();
@@ -214,10 +227,10 @@ namespace CeltaNavsApi.Controllers
                 }
                 _saleRequestProductTemp.Quantity = quantidade;
                 _saleRequestProductTemp.TotalLiquid = (_saleRequestProductTemp.Value * _saleRequestProductTemp.Quantity);
-                _saleRequestTemp.Products.Add(_saleRequestProductTemp);
+                //_saleRequestTemp.Products.Add(_saleRequestProductTemp);
                 _saleRequestTemp.TotalLiquid += _saleRequestProductTemp.TotalLiquid;
 
-                //saleRequestProductTempDao.Add(_saleRequestProductTemp);
+                saleRequestProductTempDao.Add(_saleRequestProductTemp);
                 saleRequestTempDao.Update(_saleRequestTemp);
 
                 XML += $"<CONSOLE>Produto adicionado com sucesso<BR>";

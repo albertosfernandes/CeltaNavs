@@ -1,7 +1,12 @@
-﻿using System;
+﻿using CeltaNavs.Domain;
+using CeltaNavs.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Web;
+using System.Web.Configuration;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -9,6 +14,15 @@ namespace CeltaNavsApi.Helpers
 {
     public class NavsSaleHelpers
     {
+        #region Private properties
+        private ModelSaleRequestTemp saleRequestTemp = new ModelSaleRequestTemp();
+        private HttpClient _httpClient = null;
+        private string navsIp;
+        private string navsPort;
+        private SaleRequestProductTempDao saleRequestProductTempDao = new SaleRequestProductTempDao();
+        private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();
+        #endregion
+
         #region Private Methods
         private static string GetNodeElementText(XmlElement element)
         {
@@ -18,6 +32,13 @@ namespace CeltaNavsApi.Helpers
             return String.Empty;
         }
         #endregion
+
+        public NavsSaleHelpers()
+        {
+            this.navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            this.navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+        }
+      
 
 
         public static string GetFiscalNoteAccessKey(string xmlSale)
@@ -61,6 +82,49 @@ namespace CeltaNavsApi.Helpers
             }
 
             return String.Empty;
+        }
+
+        public ModelSaleRequestTemp TransferSaleRequestToSaleRequestTemp(ModelSaleRequest saleRequest)
+        {
+            //preciso carrega-lo na tabela temp!!!!!
+            saleRequestTemp.PersonalizedCode = saleRequest.PersonalizedCode;
+            saleRequestTemp.EnterpriseId = saleRequest.EnterpriseId;
+
+            _httpClient = new HttpClient();
+            _httpClient.Timeout = new TimeSpan(0, 0, 30);
+            _httpClient.BaseAddress = new Uri($"http://{navsIp}:{navsPort}");
+            HttpResponseMessage response = null;
+            var content = new ObjectContent<ModelSaleRequestTemp>(saleRequestTemp, new JsonMediaTypeFormatter());
+
+            response = _httpClient.PostAsync("api/APISaleRequest/AddSaleRequestTemp", content).Result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                //O`pa deu erro ao criar o pedido na Temp!!
+
+            }
+
+            var resultSaleRequestTemp = saleRequestTempDao.Get(saleRequest.EnterpriseId.ToString(), saleRequest.PersonalizedCode, false);
+
+            foreach (var p in saleRequest.Products)
+            {
+                ModelSaleRequestProductTemp pTemp = new ModelSaleRequestProductTemp();
+                //pTemp.Product = p.Product;
+                pTemp.ProductInternalCodeOnErp = p.ProductInternalCodeOnErp;
+                pTemp.ProductPriceLookUpCode = p.ProductPriceLookUpCode;
+                pTemp.Quantity = p.Quantity;
+                //pTemp.SaleRequestProductTempId = p.sa
+                //pTemp.SaleRequestTemp = saleRequestTemp;
+                pTemp.SaleRequestTempId = resultSaleRequestTemp.SaleRequestTempId;
+                pTemp.TotalLiquid = p.TotalLiquid;
+                pTemp.Value = p.Value;
+                //saleRequestTemp.Products.Add(pTemp);
+                resultSaleRequestTemp.TotalLiquid += p.TotalLiquid;
+                saleRequestProductTempDao.Add(pTemp);
+            }
+                saleRequestTempDao.Update(resultSaleRequestTemp);
+
+            return resultSaleRequestTemp;
         }
     }
 }

@@ -136,14 +136,7 @@ namespace CeltaNavs.Domain
 
         public void Add(ModelSaleRequest saleReq)
         {
-            context.SaleRequests.Add(saleReq);
-            if (saleReq.Products != null)
-            {
-                foreach (var item in saleReq.Products)
-                {
-                    context.SaleRequestProducts.Add(item);
-                }
-            }
+            context.SaleRequests.Add(saleReq);           
             context.SaveChanges();
         }
 
@@ -221,6 +214,7 @@ namespace CeltaNavs.Domain
                 saleRequest.TotalLiquid = _saleReq.TotalLiquid;
                 saleRequest.IsUsing = _saleReq.IsUsing;
                 saleRequest.Peoples = _saleReq.Peoples;
+                saleRequest = _saleReq;
                 
                 context.SaveChanges();
             }

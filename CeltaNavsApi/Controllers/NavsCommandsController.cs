@@ -12,18 +12,18 @@ using System.Xml;
 
 namespace CeltaNavsApi.Controllers
 {
-    public class NavsCommandsController : ApiController
+    public class NavsCommandsController : BaseController
     {
-        private string navsIp;
-        private string navsPort;
+        //private string navsIp;
+        //private string navsPort;
 
-        NavsSettingDao settingsdao = new NavsSettingDao();
-        ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //NavsSettingDao settingsdao = new NavsSettingDao();
+        //ModelNavsSetting modelSetting = new ModelNavsSetting();
 
         public NavsCommandsController()
         {            
-            navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
+            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
         }
 
         [HttpGet]

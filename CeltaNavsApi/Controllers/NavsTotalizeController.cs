@@ -19,7 +19,7 @@ namespace CeltaNavsApi.Controllers
         //private string navsPort;
 
         NavsSettingDao navsSettingsDao = new NavsSettingDao();
-        ModelNavsSetting modelSetting = new ModelNavsSetting();
+        //ModelNavsSetting modelSetting = new ModelNavsSetting();
         ModelSaleRequest _saleRequest = new ModelSaleRequest();
         ModelSaleMovementFinalization modelNavsFinalization = new ModelSaleMovementFinalization();
         
