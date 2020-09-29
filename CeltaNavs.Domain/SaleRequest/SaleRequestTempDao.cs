@@ -118,6 +118,7 @@ namespace CeltaNavs.Domain
                         modeSaleReqProd.Comments = null;
                         modeSaleReqProd.IsCancelled = false;
                         modeSaleReqProd.IsDelivered = false;
+                        modeSaleReqProd.DateHourOfCreation = DateTime.Now;
                         modeSaleReqProd.ProductionStatus = ProductionStatus.New;
                         modeSaleReqProd.Quantity = _saleReq.Quantity;
                         modeSaleReqProd.Value = Convert.ToDecimal(_saleReq.Product.SaleRetailPraticedString);
@@ -143,6 +144,7 @@ namespace CeltaNavs.Domain
                     modeSaleReqProd.Comments = null;
                     modeSaleReqProd.IsCancelled = false;
                     modeSaleReqProd.IsDelivered = false;
+                    modeSaleReqProd.DateHourOfCreation = DateTime.Now;
                     modeSaleReqProd.ProductionStatus = ProductionStatus.New;
                     modeSaleReqProd.Quantity = _saleReq.Quantity;
                     modeSaleReqProd.Value = Convert.ToDecimal(_saleReq.Product.SaleRetailPraticedString);

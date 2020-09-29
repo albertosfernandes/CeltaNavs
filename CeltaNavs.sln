@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CeltaNavs.Api", "CeltaNavsApi\CeltaNavs.Api.csproj", "{E0DA1560-FCAB-4E5C-843B-F09DE39A99B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CeltaNavs.Repository", "CeltaNavs.Repository\CeltaNavs.Repository.csproj", "{0B70D121-A29E-4B10-93D6-E77402C80DCE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CeltaNavs.Domain", "CeltaNavs.Domain\CeltaNavs.Domain.csproj", "{CF36BFBA-1C0F-48D5-93CC-80D3C32AE918}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CeltaNavs.PrintService", "CeltaNavs.PrintService\CeltaNavs.PrintService.csproj", "{0F48D785-F91B-4C69-8F24-1CF28D56C9C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{CF36BFBA-1C0F-48D5-93CC-80D3C32AE918}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF36BFBA-1C0F-48D5-93CC-80D3C32AE918}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF36BFBA-1C0F-48D5-93CC-80D3C32AE918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F48D785-F91B-4C69-8F24-1CF28D56C9C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F48D785-F91B-4C69-8F24-1CF28D56C9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F48D785-F91B-4C69-8F24-1CF28D56C9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F48D785-F91B-4C69-8F24-1CF28D56C9C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

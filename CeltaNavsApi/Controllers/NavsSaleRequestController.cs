@@ -17,32 +17,21 @@ namespace CeltaNavsApi.Controllers
 {
     public class NavsSaleRequestController : BaseController
     {
-        //private string navsIp;
-        //private string navsPort;
-        //private string characters;
-        //private HttpClient _httpClient = null;
+        
 
         ModelSaleRequest saleRequest = new ModelSaleRequest();
-        ModelSaleRequestTemp saleRequestTemp = new ModelSaleRequestTemp();
-        //ModelNavsSetting modelSetting = new ModelNavsSetting();
+        ModelSaleRequestTemp saleRequestTemp = new ModelSaleRequestTemp();        
         ModelSaleRequestProduct saleRequestProducts = new ModelSaleRequestProduct();        
         ModelProduct product = new ModelProduct();
-        //SaleRequestDao saleRequestDaoNew = new SaleRequestDao();
+        
         private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();        
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
-        private SaleRequestProductDao saleRequestProductsDao = new SaleRequestProductDao();        
-        //private NavsSettingDao settingsDao = new NavsSettingDao();
+        private SaleRequestProductDao saleRequestProductsDao = new SaleRequestProductDao();                
         private ProductDao productsDao = new ProductDao();
 
         public NavsSaleRequestController()
         {            
-            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
-            //characters = WebConfigurationManager.AppSettings.Get("");
-
-            //_httpClient = new HttpClient();
-            //_httpClient.Timeout = new TimeSpan(0, 0, 30);
-            //_httpClient.BaseAddress = new Uri($"http://{navsIp}:{navsPort}");
+            
         }
 
         /*Chamo a partir do NavsCommands caso o cliente digite o numero do pedido direto verifico se existe*/
@@ -367,6 +356,8 @@ namespace CeltaNavsApi.Controllers
                 saleRequestProducts.Quantity = quant;
                 saleRequestProducts.TotalLiquid = (saleRequestProducts.Value * saleRequestProducts.Quantity);
                 saleRequestProducts.IsCancelled = false;
+                saleRequestProducts.IsDelivered = false;
+                saleRequestProducts.DateHourOfCreation = DateTime.Now;
                 saleRequestProducts.IsDelivered = false;
                 saleRequestProducts.ProductionStatus = ProductionStatus.New;
 

@@ -22,6 +22,13 @@ namespace CeltaNavsApi.Controllers
         }
 
         [HttpGet]
+        public List<ModelSaleRequestProduct> GetForPrint(string _enterpriseId)
+        {
+            int id = Convert.ToInt32(_enterpriseId);
+            return saleRequestProdDao.GetForPrint(id);
+        }
+
+        [HttpGet]
         public List<ModelSaleRequestProduct> Get(string _enterpriseId, string saleRequesId)
         {
             return saleRequestProdDao.GetAll(_enterpriseId, saleRequesId);
@@ -45,15 +52,22 @@ namespace CeltaNavsApi.Controllers
             return saleRequestProdDao.GetProducts(_enterpriseId, _saleRequestId, true);
         }
 
-        [HttpPut]
-        public HttpResponseMessage Update(string _saleRequestProductId)
+        [HttpGet]
+        public HttpResponseMessage Update(string _saleRequestProductId, int isMArk)
         {
             try
             {
+                bool mark = Convert.ToBoolean(isMArk);
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-
-                saleRequestProdDao.MarkToDelivery(_saleRequestProductId);
-
+                if (mark)
+                {
+                    saleRequestProdDao.MarkToDelivery(_saleRequestProductId);
+                }
+                else
+                {
+                    saleRequestProdDao.UnMarkDelivery(_saleRequestProductId);
+                }
+                
                 return response;
 
             }
@@ -63,8 +77,8 @@ namespace CeltaNavsApi.Controllers
                 return response;
             }
         }
-
-        [HttpPut]
+        
+        [HttpGet]
         public HttpResponseMessage UpdateStatus(string _saleRequestProductId, string statusproductioncocde)
         {
             try
@@ -103,6 +117,13 @@ namespace CeltaNavsApi.Controllers
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.InternalServerError);
                 return response;
             }
+        }
+
+        [HttpGet]
+        public IHttpActionResult MarkToPrinted(int _saleRequestProductId)
+        {
+            saleRequestProdDao.MarkToPrinted(_saleRequestProductId);
+            return Ok();
         }
     }
 }

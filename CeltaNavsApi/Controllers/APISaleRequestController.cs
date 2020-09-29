@@ -24,7 +24,20 @@ namespace CeltaNavsApi.Controllers
                 return saleRequestDao.GetAll(_enterpriseId);
             else
                 return saleRequestDao.GetAllConsiderDelivered(_enterpriseId);
-        }        
+        }
+        
+        [HttpGet]
+        public List<ModelSaleRequest> NewGetAll(string _enterpriseId, int isUsing, int isCancel, int isDelivered, int isPrinted)
+        {
+            return saleRequestDao.NewGetAll(_enterpriseId, Convert.ToBoolean(isUsing), Convert.ToBoolean(isCancel), Convert.ToBoolean(isDelivered), Convert.ToBoolean(isPrinted));
+        }
+
+        [HttpGet]
+        public List<ModelSaleRequest> GetAllById(string _enterpriseId, int isUsing, int isCancel, int isDelivered, int isPrinted)
+        {
+            return saleRequestDao.GetAllById(_enterpriseId, Convert.ToBoolean(isUsing), Convert.ToBoolean(isCancel), Convert.ToBoolean(isDelivered), Convert.ToBoolean(isPrinted));
+        }
+        //
 
         [HttpGet]
         public ModelSaleRequest Get(string _enterpriseId, string _personalizedCode, bool _considerUsing)

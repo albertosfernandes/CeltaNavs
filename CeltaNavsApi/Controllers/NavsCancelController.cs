@@ -13,11 +13,8 @@ using System.Web.Http;
 namespace CeltaNavsApi.Controllers
 {
     public class NavsCancelController : BaseController
-    {        
-        //private ModelNavsSetting modelSetting = new ModelNavsSetting();
-        private ModelSaleRequest saleRequest = new ModelSaleRequest();
-
-        //private NavsSettingDao settingsDao = new NavsSettingDao();
+    {                
+        private ModelSaleRequest saleRequest = new ModelSaleRequest();        
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
         private SaleRequestProductDao saleRequestProductsDao = new SaleRequestProductDao();
         private SaleRequestTempDao saleRequestTempDao = new SaleRequestTempDao();

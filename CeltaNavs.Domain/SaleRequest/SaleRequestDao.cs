@@ -40,13 +40,73 @@ namespace CeltaNavs.Domain
                 int enterpriseId = Convert.ToInt32(_enterpriseId);
 
                 var saleRequest = context.SaleRequests
-                   .Where(s => s.EnterpriseId == enterpriseId && s.IsUsing == false)
+                                  .Where(s => s.EnterpriseId == enterpriseId && s.IsUsing == false)
+                                  .Include(prod => prod.Products.Select(s => s.Product))
+                                  .OrderBy(s => s.PersonalizedCode)
+                                  .ToList();
+
+
+                return saleRequest;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public List<ModelSaleRequest> NewGetAll(string _enterpriseId, bool isUsing, bool isCancel, bool isDelivered, bool isPrinted)
+        {
+            try
+            {
+                int enterpriseId = Convert.ToInt32(_enterpriseId);
+                List<ModelSaleRequest> SaleRequestListNew = new List<ModelSaleRequest>();
+
+                var saleRequest = context.SaleRequests
+                   .Where(s => s.EnterpriseId == enterpriseId && s.IsUsing == isUsing && s.IsCancelled == isCancel)
                    .Include(prod => prod.Products.Select(s => s.Product))
                    .OrderBy(s => s.PersonalizedCode)
                    .ToList();
 
+                foreach (var item in saleRequest)
+                {
+                    var teste = item.Products.Where(p => p.IsDelivered == isDelivered && p.IsPrinted == isPrinted);
+                    if (teste.Any())
+                    {
+                        SaleRequestListNew.Add(item);
+                    }
+                }
 
-                return saleRequest;
+                return SaleRequestListNew;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public List<ModelSaleRequest> GetAllById(string _enterpriseId, bool isUsing, bool isCancel, bool isDelivered, bool isPrinted)
+        {
+            try
+            {
+                int enterpriseId = Convert.ToInt32(_enterpriseId);
+                List<ModelSaleRequest> SaleRequestListNew = new List<ModelSaleRequest>();
+
+                var saleRequest = context.SaleRequests
+                   .Where(s => s.EnterpriseId == enterpriseId && s.IsUsing == isUsing && s.IsCancelled == isCancel)
+                   .Include(prod => prod.Products.Select(s => s.Product))
+                   .OrderByDescending(s => s.SaleRequestId)
+                   .ToList();
+
+                foreach (var item in saleRequest)
+                {
+                    var teste = item.Products.Where(p => p.IsDelivered == isDelivered && p.IsPrinted == isPrinted);
+                    if (teste.Any())
+                    {
+                        SaleRequestListNew.Add(item);
+                    }
+                }
+
+                return SaleRequestListNew;
             }
             catch (Exception err)
             {

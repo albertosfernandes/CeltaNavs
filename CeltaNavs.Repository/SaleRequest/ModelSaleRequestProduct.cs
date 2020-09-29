@@ -13,8 +13,8 @@ namespace CeltaNavs.Repository
     public class ModelSaleRequestProduct
     {
         public ModelSaleRequestProduct()
-        {
-            
+        {           
+            //this.SaleRequest = new ModelSaleRequest();   
         }
 
         [Key] 
@@ -23,9 +23,11 @@ namespace CeltaNavs.Repository
         public decimal Value { get; set; }
         public decimal Quantity { get; set; }
         public string Comments { get; set; }
-        public int UserId { get; set; }       
+        public int UserId { get; set; }
+        public DateTime DateHourOfCreation { get; set; }
         public bool IsCancelled { get; set; }
         public bool IsDelivered { get; set; }
+        public bool IsPrinted { get; set; }
         public ProductionStatus ProductionStatus { get; set; }
         public decimal TotalLiquid { get; set; }        
         public virtual ModelProduct Product { get; set; }

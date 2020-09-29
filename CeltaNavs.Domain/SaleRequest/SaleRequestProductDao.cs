@@ -119,6 +119,55 @@ namespace CeltaNavs.Domain
             }
         }
 
+        public List<ModelSaleRequestProduct> GetForPrint (int id)
+        {
+            // int id = Convert.ToInt32(_enterpriseId);
+            try
+            {
+                List<ModelSaleRequestProduct> listSaleRequestProducts = new List<ModelSaleRequestProduct>();
+
+                var itens = (from saleRequestProd in context.SaleRequestProducts
+                             join prods in context.Products
+                             on saleRequestProd.ProductInternalCodeOnErp equals prods.InternalCodeOnERP
+                             join saleReq in context.SaleRequests
+                             on saleRequestProd.SaleRequestId equals saleReq.SaleRequestId
+                             where prods.EnterpriseId == id && saleRequestProd.IsDelivered == false && saleRequestProd.IsCancelled == false && saleRequestProd.IsPrinted == false
+                             select new
+                             {
+                                 saleRequestProd,
+                                 prods,
+                                 saleReq
+
+                             }).ToList();
+
+                foreach (var saleReqprod in itens)
+                {
+                    ModelSaleRequestProduct srp = new ModelSaleRequestProduct();
+                    ModelSaleRequest sr = new ModelSaleRequest();
+                    sr = saleReqprod.saleReq;
+                    srp.SaleRequestProductId = saleReqprod.saleRequestProd.SaleRequestProductId;
+                    srp.SaleRequestId = saleReqprod.saleRequestProd.SaleRequestId;
+                    srp.ProductInternalCodeOnErp = saleReqprod.saleRequestProd.ProductInternalCodeOnErp;
+                    srp.Value = saleReqprod.saleRequestProd.Value;
+                    srp.Quantity = saleReqprod.saleRequestProd.Quantity;
+                    srp.Comments = saleReqprod.saleRequestProd.Comments;
+                    srp.UserId = saleReqprod.saleRequestProd.UserId;
+                    srp.IsCancelled = saleReqprod.saleRequestProd.IsCancelled;
+                    srp.IsPrinted = saleReqprod.saleRequestProd.IsPrinted;
+                    srp.Product = saleReqprod.prods;
+                    srp.TotalLiquid = saleReqprod.saleRequestProd.TotalLiquid;
+                    srp.SaleRequest = sr;
+                    listSaleRequestProducts.Add(srp);
+                }
+
+                return listSaleRequestProducts;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
 
         public List<ModelSaleRequestProduct> GetDelivered(string _enterpriseId)
         {
@@ -179,6 +228,7 @@ namespace CeltaNavs.Domain
                                                                && s.SaleRequest.SaleRequestId == salaRequestId)
                             .Include(sale => sale.SaleRequest)
                             .Include(p => p.Product)
+                            .OrderByDescending(s => s.SaleRequestId)
                             .ToList();                
                             
             }
@@ -319,6 +369,24 @@ namespace CeltaNavs.Domain
             }
         }
 
+        public void UnMarkDelivery(string _saleRequestProductId)
+        {
+            int _id = Convert.ToInt32(_saleRequestProductId);
+            try
+            {
+                ModelSaleRequestProduct saleReqProd = context.SaleRequestProducts.Find(_id);
+
+                saleReqProd.IsDelivered = false;
+
+
+                context.SaveChanges();
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
         public void MarkToProduction(string _saleRequestProductId)
         {            
             try
@@ -345,6 +413,27 @@ namespace CeltaNavs.Domain
                 saleReqProd.ProductionStatus = ProductionStatus.Delivered;
 
 
+                context.SaveChanges();
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public void MarkToPrinted(int _saleRequestProductId)
+        {            
+            try
+            {
+                var result = context.SaleRequestProducts.Where(s => s.SaleRequestProductId == _saleRequestProductId)
+                            .Include(s => s.SaleRequest)                            
+                            .FirstOrDefault();
+
+
+                if (result != null)
+                {
+                    result.IsPrinted = true;
+                }
                 context.SaveChanges();
             }
             catch (Exception err)

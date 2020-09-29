@@ -14,6 +14,7 @@ namespace CeltaNavsApi.Controllers
     public class APINavsSettingController : ApiController
     {
         NavsSettingDao settingsDao = new NavsSettingDao();
+        EnterpriseDao enterpriseDao = new EnterpriseDao();
 
         [HttpGet]
         public ModelNavsSetting Get(string _enterpriseId, string _pdv)
@@ -25,6 +26,17 @@ namespace CeltaNavsApi.Controllers
         public List<ModelEnterprise> GetAllEnterprises()
         {
              return settingsDao.GetAllEnterprises();
+        }
+
+        [HttpGet]
+        public IHttpActionResult GetEnterpriseByPersonalizedCode(int _personalizedCode)
+        {
+            var result = enterpriseDao.GetByPersonalizedCode(_personalizedCode.ToString());
+            if(result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpGet]

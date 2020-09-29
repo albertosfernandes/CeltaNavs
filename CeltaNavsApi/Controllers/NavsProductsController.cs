@@ -15,13 +15,9 @@ namespace CeltaNavsApi.Controllers
 {
     public class NavsProductsController : BaseController
     {
-        //private string navsIp;
-        //private string navsPort;
-        private ModelProduct product = new ModelProduct();
-        //private ModelNavsSetting modelSetting = new ModelNavsSetting();
-        private ModelExpansibleGroup groups = new ModelExpansibleGroup();
-
-        //private NavsSettingDao navsSettingsDao = new NavsSettingDao();
+        
+        private ModelProduct product = new ModelProduct();      
+        private ModelExpansibleGroup groups = new ModelExpansibleGroup();        
         private ExpansibleGroupDao groupDao = new ExpansibleGroupDao();
         private ProductDao productsDao = new ProductDao();
         private SaleRequestDao saleRequestsDao = new SaleRequestDao();
@@ -30,8 +26,7 @@ namespace CeltaNavsApi.Controllers
 
         public NavsProductsController()
         {
-            //navsIp = WebConfigurationManager.AppSettings.Get("NavsIp");
-            //navsPort = WebConfigurationManager.AppSettings.Get("NavsPort");
+            
         }
 
         public HttpResponseMessage Get(string _CODPROD, string _PRODUCTTABLE, string _TERMINALSERIAL)

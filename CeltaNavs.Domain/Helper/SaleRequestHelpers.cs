@@ -47,7 +47,7 @@ namespace CeltaNavs.Domain.Helper
                     srp.UserId = saleReqprod.saleRequestProd.UserId;
                     srp.IsCancelled = saleReqprod.saleRequestProd.IsCancelled;
                     srp.Product = saleReqprod.prods;
-                    srp.TotalLiquid = saleReqprod.saleRequestProd.TotalLiquid;
+                    srp.TotalLiquid = saleReqprod.saleRequestProd.TotalLiquid;                    
                     listSaleRequestProducts.Add(srp);
                 }
 
