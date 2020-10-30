@@ -14,6 +14,7 @@ namespace CeltaNavsApi.Controllers
     public class APISaleRequestProductController : ApiController
     {
         SaleRequestProductDao saleRequestProdDao = new SaleRequestProductDao();
+        SaleRequestProductTempDao saleRequestProductTempDao = new SaleRequestProductTempDao();
 
         [HttpGet]
         public List<ModelSaleRequestProduct> GetAll(string _enterpriseId, bool _isConsiderDelivery)
@@ -124,6 +125,36 @@ namespace CeltaNavsApi.Controllers
         {
             saleRequestProdDao.MarkToPrinted(_saleRequestProductId);
             return Ok();
+        }
+
+        [HttpPost]
+        public HttpResponseMessage Add(ModelSaleRequestProductTemp _saleRequestProductTemp)
+        {
+            try
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
+                saleRequestProductTempDao.Add(_saleRequestProductTemp);
+                return response;
+            }
+            catch(Exception err)
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                return response;
+            }
+        }
+
+        [HttpGet]
+        public HttpStatusCode DeleteSaleRequestProductTemp(int id)
+        {
+            try
+            {
+                saleRequestProductTempDao.Delete(id);
+                return HttpStatusCode.OK;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
         }
     }
 }

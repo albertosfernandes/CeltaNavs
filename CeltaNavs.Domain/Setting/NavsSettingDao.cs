@@ -33,6 +33,19 @@ namespace CeltaNavs.Domain
                 .FirstOrDefault<ModelNavsSetting>();
         }
 
+        public ModelNavsSetting GetByEnterprise(int _emp)
+        {
+            //if (_emp == "undefined")
+            //{
+            //    _emp = "0";
+            //}
+
+            int emp = Convert.ToInt32(_emp);          
+            return context.NavsSettings
+                .Where(s => s.EnterpriseId == emp)
+                .FirstOrDefault<ModelNavsSetting>();
+        }
+
         public ModelNavsSetting GetById(string posSerial)
         {            
             return context.NavsSettings

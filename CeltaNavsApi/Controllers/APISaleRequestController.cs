@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -33,16 +34,35 @@ namespace CeltaNavsApi.Controllers
         }
 
         [HttpGet]
-        public List<ModelSaleRequest> GetAllById(string _enterpriseId, int isUsing, int isCancel, int isDelivered, int isPrinted)
+        public List<ModelSaleRequest> GetAllById(string _enterpriseId, int isUsing, int isCancel, int isDelivered)
         {
-            return saleRequestDao.GetAllById(_enterpriseId, Convert.ToBoolean(isUsing), Convert.ToBoolean(isCancel), Convert.ToBoolean(isDelivered), Convert.ToBoolean(isPrinted));
+            return saleRequestDao.GetAllById(_enterpriseId, Convert.ToBoolean(isUsing), Convert.ToBoolean(isCancel), Convert.ToBoolean(isDelivered));
         }
-        //
+        
+        [HttpGet]
+        public ModelSaleRequestTemp GetTemp(string _enterpriseId, string _personalizedCode, bool _considerUsing)
+        {
+            try
+            {
+                return saleRequestTempDao.Get(_enterpriseId, _personalizedCode, _considerUsing);
+            }
+            catch(Exception err)
+            {
+                throw err;
+            }
+        }
 
         [HttpGet]
         public ModelSaleRequest Get(string _enterpriseId, string _personalizedCode, bool _considerUsing)
         {
-            return saleRequestDao.Get(_enterpriseId, _personalizedCode, _considerUsing);
+            try
+            {
+                return saleRequestDao.Get(_enterpriseId, _personalizedCode, _considerUsing);
+            }
+            catch(Exception err)
+            {
+                throw err;
+            }
         }
         
         [HttpGet]
@@ -105,6 +125,35 @@ namespace CeltaNavsApi.Controllers
                 return HttpStatusCode.OK;
             }
             catch (Exception err)
+            {
+                return HttpStatusCode.InternalServerError;
+            }
+        }
+
+        [HttpPut]
+        public HttpStatusCode UpdateSaleRequestTemp(ModelSaleRequestTemp _saleRequest)
+        {
+            try
+            {
+                saleRequestTempDao.Update(_saleRequest);
+                return HttpStatusCode.OK;
+            }
+            catch (Exception err)
+            {
+                return HttpStatusCode.InternalServerError;
+            }
+        }
+
+        [HttpPost]
+        public HttpStatusCode FinishSaleRequestTemp(ModelSaleRequestTemp _saleRequestTemp)
+        {
+            try
+            {
+                saleRequestTempDao.Finish(_saleRequestTemp);
+                saleRequestTempDao.DeleteNew(_saleRequestTemp.SaleRequestTempId);
+                return HttpStatusCode.OK;
+            }
+            catch(Exception err)
             {
                 return HttpStatusCode.InternalServerError;
             }

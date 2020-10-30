@@ -23,11 +23,11 @@ namespace CeltaNavs.Domain
 
                 var saleRequestemp = context.SaleRequestsTemp
                    .Where(s => s.PersonalizedCode == _personalizedCode && s.EnterpriseId == enterpriseId)
-                   .Include(srp => srp.Products)
+                   .Include(srp => srp.Products.Select(p => p.Product))
                    .FirstOrDefault();
-                
-                //if(saleRequestemp != null)
-                //newlistSaleRequestProducts = Helper.SaleRequestHelpers.FixProductIdTemp(saleRequestemp.SaleRequestTempId, enterpriseId);
+
+                //if (saleRequestemp != null)
+                //    newlistSaleRequestProducts = Helper.SaleRequestHelpers.FixProductIdTemp(saleRequestemp.SaleRequestTempId, enterpriseId);
 
                 return saleRequestemp;
             }
@@ -80,8 +80,8 @@ namespace CeltaNavs.Domain
             try
             {
                 saleRequestTemp = context.SaleRequestsTemp.Find(_saleReqTemp.SaleRequestTempId);
-                saleRequestTemp.TotalLiquid = _saleReqTemp.TotalLiquid;
-                
+                saleRequestTemp.TotalLiquid += _saleReqTemp.TotalLiquid;              
+                saleRequestTemp.Products = _saleReqTemp.Products;
                 context.SaveChanges();
             }
             catch (Exception err)
@@ -134,7 +134,7 @@ namespace CeltaNavs.Domain
 
                     //saleRequestsDao.Update(saleRequestNew);
                     saleRequestsDao.AddNew(saleRequestNew);
-                    Delete(_saleRequestTemp);
+                    //Delete(_saleRequestTemp);
                     return true;
                 }
                 
@@ -158,7 +158,7 @@ namespace CeltaNavs.Domain
                 }
                 
                 saleRequestsDao.Update(saleRequest);
-                Delete(_saleRequestTemp);
+                //Delete(_saleRequestTemp);
                 return true;
             }
             catch(Exception err)
@@ -251,6 +251,13 @@ namespace CeltaNavs.Domain
         public void Delete(ModelSaleRequestTemp saleRequestTemp)
         {
             context.SaleRequestsTemp.Remove(saleRequestTemp);
+            context.SaveChanges();
+        }
+
+        public void DeleteNew(int id)
+        {
+            var d = context.SaleRequestsTemp.Find(id);
+            context.SaleRequestsTemp.Remove(d);
             context.SaveChanges();
         }
     }

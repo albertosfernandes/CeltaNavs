@@ -85,7 +85,7 @@ namespace CeltaNavs.PrintService
                     client.BaseAddress = new Uri($"{navsAddress}");
                     listOfProducts.Clear();
 
-                    //var responseHttp = client.GetAsync("/api/APISaleRequestProduct/GetForPrint?_enterpriseId=" + enterprise.EnterpriseId);
+                    //var responseHttp = client.GetAsync("/api/APISaleRequestProduct/GetForPrint?_enterpriseId=" + enterprise.EnterpriseId); GetAllById
                     // 
                     var responseHttp = client.GetAsync($"/api/APISaleRequest/NewGetAll?_enterpriseId={enterprise.EnterpriseId}&isUsing=0&isCancel=0&isDelivered=0&isPrinted=0");
                     responseHttp.Wait();
@@ -100,11 +100,17 @@ namespace CeltaNavs.PrintService
                    
                         foreach (var saleRequest in saleRequestResult)
                         {
+
+                            string headprint = $"Empresa: {enterprise.FantasyName}.\n";
+                            headprint += "Pedido: " + saleRequest.PersonalizedCode + ".\n";
+                            string message = String.Empty;
+
                             if (saleRequest.Products?.Any() == true)
                             {
-                                string headprint = $"Empresa: {enterprise.FantasyName}.\n";
-                                headprint += "Pedido: " + saleRequest.PersonalizedCode + ".\n";
-                                string message = String.Empty;
+                                //string headprint = $"Empresa: {enterprise.FantasyName}.\n";
+                                //headprint += "Pedido: " + saleRequest.PersonalizedCode + ".\n";
+                                //string message = String.Empty;
+
                                 //tem alguma coisa então é só mandar imprimir
                                 foreach (var product in saleRequest.Products)
                                 {
@@ -113,11 +119,16 @@ namespace CeltaNavs.PrintService
                                     MarkToPrinted(product.SaleRequestProductId);
                                     //listOfProducts.Add(product);
                                 }
-                                PrintTest(headprint + message);
-                                //print.ImprimeVendaVista(listOfProducts);
-                                Print p = new Print();
-                                p.ToPrint(saleRequest, saleRequest.Products);
+                                //PrintTest(headprint + message);
+                                ////print.ImprimeVendaVista(listOfProducts);
+                                //Print p = new Print();
+                                //p.ToPrint(saleRequest, saleRequest.Products);
                             }
+
+                            PrintTest(headprint + message);
+                            //print.ImprimeVendaVista(listOfProducts);
+                            Print p = new Print();
+                            p.ToPrint(saleRequest, saleRequest.Products, enterprise);
                         }
                     }                                     
                 }                

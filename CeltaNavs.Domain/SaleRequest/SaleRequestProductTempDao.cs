@@ -14,5 +14,14 @@ namespace CeltaNavs.Domain
             context.SaleRequestProductsTemp.Add(saleReqProd);
             context.SaveChanges();
         }
+
+        public void Delete(int id)
+        {
+            ModelSaleRequestProductTemp p = new ModelSaleRequestProductTemp();
+            var resp = context.SaleRequestProductsTemp.Find(id);
+            p = resp;
+            context.SaleRequestProductsTemp.Remove(p);
+            context.SaveChanges();
+        }
     }
 }

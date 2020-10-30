@@ -13,16 +13,7 @@ namespace CeltaNavs.Domain
         {            
             int productInt = Convert.ToInt32(productCode);
             return context.Products.Where(prod =>
-            prod.InternalCodeOnERP == productInt && prod.EnterpriseId == navsSettings.EnterpriseId).FirstOrDefault();
-            //ModelProduct p = new ModelProduct();
-            //var result = context.Products.Where(prod => 
-            //prod.InternalCodeOnERP == productInt
-            //&& prod.EnterpriseId == navsSettings.EnterpriseId);
-            //foreach (var item in result)
-            //{
-            //    p = item;
-            //}
-            //return p;
+            prod.InternalCodeOnERP == productInt && prod.EnterpriseId == navsSettings.EnterpriseId).FirstOrDefault();         
         }
 
         public ModelProduct FindByPlu(string productCode, ModelNavsSetting navsSettings)
@@ -41,16 +32,12 @@ namespace CeltaNavs.Domain
 
             return context.Products.Where(prod =>
             prod.PriceLookupCode == productCodeWithDigit && prod.EnterpriseId == navsSettings.EnterpriseId).FirstOrDefault();
+        }
 
-            //ModelProduct p = new ModelProduct();
-            //var result = context.Products.Where(prod =>
-            //prod.PriceLookupCode == productCodeWithDigit
-            //&& prod.EnterpriseId == navsSettings.EnterpriseId);
-            //foreach (var item in result)
-            //{
-            //    p = item;
-            //}
-            //return p;
+        public ModelProduct FindByEan(string productCode, ModelNavsSetting navsSettings)
+        {            
+            return context.Products.Where(prod =>
+            prod.EanCode == productCode && prod.EnterpriseId == navsSettings.EnterpriseId).FirstOrDefault();            
         }
 
         public List<ModelProduct> GetAll(ModelNavsSetting navsSettings)

@@ -32,6 +32,7 @@ namespace CeltaNavs.Domain
                 throw err;
             }
         }
+        
 
         public List<ModelSaleRequest> GetAll(string _enterpriseId)
         {
@@ -84,7 +85,7 @@ namespace CeltaNavs.Domain
             }
         }
 
-        public List<ModelSaleRequest> GetAllById(string _enterpriseId, bool isUsing, bool isCancel, bool isDelivered, bool isPrinted)
+        public List<ModelSaleRequest> GetAllById(string _enterpriseId, bool isUsing, bool isCancel, bool isDelivered)
         {
             try
             {
@@ -99,7 +100,7 @@ namespace CeltaNavs.Domain
 
                 foreach (var item in saleRequest)
                 {
-                    var teste = item.Products.Where(p => p.IsDelivered == isDelivered && p.IsPrinted == isPrinted);
+                    var teste = item.Products.Where(p => p.IsDelivered == isDelivered);
                     if (teste.Any())
                     {
                         SaleRequestListNew.Add(item);
@@ -378,6 +379,15 @@ namespace CeltaNavs.Domain
             return context.SaleRequests
                   .Where(s => s.PersonalizedCode == _personalizedCode && s.EnterpriseId == ent)                  
                   .FirstOrDefault();
+        }
+
+        public async Task<ModelSaleRequest> Get(string _enterpriseId, string _personalizedCode)
+        {
+            int entId = Convert.ToInt32(_enterpriseId);
+            return await context.SaleRequests
+                .Include(p => p.Products)
+                .Where(e => e.EnterpriseId == entId && e.PersonalizedCode == _personalizedCode)
+                .FirstOrDefaultAsync();
         }
 
         public int GetById(string _enterpriseId, string _personalizedCode, bool isConsider)

@@ -13,9 +13,10 @@ namespace CeltaNavs.PrintService
     {
      
         private Font regular = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Regular);
-        private ModelSaleRequest saleRequest = new ModelSaleRequest();
+        private static ModelSaleRequest saleRequest = new ModelSaleRequest();
         private static List<ModelSaleRequestProduct> listSaleProducts = new List<ModelSaleRequestProduct>();
-     
+        private static ModelEnterprise enterprise = new ModelEnterprise();
+
 
         //obtem impressora default
         public static string GetDefaultPrinterName()
@@ -32,9 +33,10 @@ namespace CeltaNavs.PrintService
             return prtSettings.PrinterName;
         }
 
-        public void ToPrint(ModelSaleRequest _saleRequest, List<ModelSaleRequestProduct> _listProducts)
+        public void ToPrint(ModelSaleRequest _saleRequest, List<ModelSaleRequestProduct> _listProducts, ModelEnterprise _enterprise)
         {            
-            this.saleRequest = _saleRequest;
+            saleRequest = _saleRequest;
+            Print.enterprise = _enterprise;
             Print.listSaleProducts = _listProducts;
             PrintDocument printDocument = new PrintDocument();
             printDocument.PrintPage += PrintDocumentOnPrintPage;
@@ -45,20 +47,24 @@ namespace CeltaNavs.PrintService
         private static void PrintDocumentOnPrintPage(object sender, PrintPageEventArgs e)
         {
             Font bold = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold);
-            Font regularItens = new Font(FontFamily.GenericSansSerif, 6, FontStyle.Regular);
+            Font regularItens = new Font(FontFamily.GenericSansSerif, 9, FontStyle.Regular);
 
-            e.Graphics.DrawString("Empresa: Empresa Teste", bold, Brushes.Black, 10, 25);
-            e.Graphics.DrawString("Pedido: 22", bold, Brushes.Black, 20, 35);
+            e.Graphics.DrawString($"Empresa: {enterprise.FantasyName}", bold, Brushes.Black, 10, 25);
+            e.Graphics.DrawString($"Pedido: {saleRequest.PersonalizedCode}", bold, Brushes.Black, 20, 55);
 
-
+            int i = 85;
             foreach (ModelSaleRequestProduct p in listSaleProducts)
             {
-                string produto = p.Product.NameReduced;
-                e.Graphics.DrawString(produto.Length > 20 ? produto.Substring(0, 20) + "..." : produto, regularItens, Brushes.Black, 20, 35);
-                //graphics.DrawString(FormataMonetario.format(iv.valorUn), regularItens, Brushes.Black, 155, offset);
-                e.Graphics.DrawString(Convert.ToString(p.Quantity), regularItens, Brushes.Black, 215, 35);
-                //graphics.DrawString(FormataMonetario.format(iv.total), regularItens, Brushes.Black, 250, offset);
-
+                if (!p.IsPrinted)
+                {
+                    string produto = p.Product.NameReduced;
+                    e.Graphics.DrawString(produto.Length > 20 ? produto.Substring(0, 20) + "..." : produto, regularItens, Brushes.Black, 20, i);
+                    //graphics.DrawString(FormataMonetario.format(iv.valorUn), regularItens, Brushes.Black, 155, offset);
+                    e.Graphics.DrawString(Convert.ToString(p.Quantity), regularItens, Brushes.Black, 215, i);
+                    //graphics.DrawString(FormataMonetario.format(iv.total), regularItens, Brushes.Black, 250, offset);
+                    i += 15;
+                }
+                
             }
         }
         

@@ -137,6 +137,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\APINavsSettingController.cs" />
     <Compile Include="Controllers\APIPrintServicesController.cs" />
+    <Compile Include="Controllers\APIProductController.cs" />
     <Compile Include="Controllers\APISaleRequestController.cs" />
     <Compile Include="Controllers\APISaleRequestProductController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
