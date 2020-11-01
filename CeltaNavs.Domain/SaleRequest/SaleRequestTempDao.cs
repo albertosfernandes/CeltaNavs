@@ -80,7 +80,7 @@ namespace CeltaNavs.Domain
             try
             {
                 saleRequestTemp = context.SaleRequestsTemp.Find(_saleReqTemp.SaleRequestTempId);
-                saleRequestTemp.TotalLiquid += _saleReqTemp.TotalLiquid;              
+                saleRequestTemp.TotalLiquid = _saleReqTemp.TotalLiquid;              
                 saleRequestTemp.Products = _saleReqTemp.Products;
                 context.SaveChanges();
             }
@@ -149,7 +149,7 @@ namespace CeltaNavs.Domain
                     modeSaleReqProd.Quantity = _saleReq.Quantity;
                     modeSaleReqProd.Value = Convert.ToDecimal(_saleReq.Product.SaleRetailPraticedString);
                     modeSaleReqProd.TotalLiquid = (_saleReq.Value * _saleReq.Quantity);
-                    modeSaleReqProd.SaleRequestId = _saleReq.SaleRequestTemp.SaleRequestTempId;
+                   // modeSaleReqProd.SaleRequestId = _saleReq.SaleRequestTemp.SaleRequestTempId;
                     modeSaleReqProd.ProductPriceLookUpCode = _saleReq.ProductPriceLookUpCode;
                     modeSaleReqProd.ProductInternalCodeOnErp = _saleReq.ProductInternalCodeOnErp;
                     modeSaleReqProd.SaleRequest = saleRequest;                    

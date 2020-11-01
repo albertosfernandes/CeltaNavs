@@ -19,6 +19,7 @@ namespace CeltaNavs.Domain
                 List<ModelSaleRequestProduct> newlistSaleRequestProducts = new List<ModelSaleRequestProduct>();
                 
                 var saleRequest = context.SaleRequests
+                    .Include(sp => sp.Products.Select(p => p.Product))
                    .Where(s => s.PersonalizedCode == _personalizedCode && s.EnterpriseId == enterpriseId && (!_considerUsing || !s.IsUsing))                   
                    .FirstOrDefault();
                 
